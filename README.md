@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Continuous Integration with GitHub, SFDX and CircleCI ...Easier than you think!
 
 I hope you enjoyed my talk at Dreamforce 2018!
