@@ -3,4 +3,5 @@ build/server.crt
 build/base64.key.txt
 .vscode/
 .DS_Store
+build/base64.txt
 
