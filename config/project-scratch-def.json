@@ -1,7 +1,10 @@
 {
-    "orgName": "mickwheeler Company",
+    "orgName": "Race Assessment",
     "edition": "Developer",
-    "orgPreferences" : {
-        "enabled": ["S1DesktopEnabled"]
+    "features": [],
+    "settings": {
+        "orgPreferenceSettings": {
+            "s1DesktopEnabled": true
+        }
     }
 }
