@@ -15,7 +15,7 @@ echo "the key will now be encoded in BASE64 in file base64.txt, use the output f
 pause
 
 type server.key > temp.txt
-certutil -encode temp.txt base64key.txt
+certutil -encode temp.txt base64.txt
 
 pause
 echo "we will now clean up, keys will be deleted"
