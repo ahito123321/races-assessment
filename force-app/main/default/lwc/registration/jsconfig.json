@@ -1,12 +1,12 @@
 {
     "compilerOptions": {
+        "experimentalDecorators": true,
         "baseUrl": ".",
         "paths": {
             "c/registration": [
                 "registration/registration.js"
             ]
-        },
-        "experimentalDecorators": true
+        }
     },
     "include": [
         "**/*",
