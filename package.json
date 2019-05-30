@@ -1,0 +1,26 @@
+{
+  "name": "race-assessment",
+  "version": "1.0.0",
+  "description": "assessment",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ahito123321/races-assessment.git"
+  },
+  "keywords": [
+    "SFDX",
+    "LWC",
+    "Jest"
+  ],
+  "author": "ahito.123321@gmail.com",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ahito123321/races-assessment/issues"
+  },
+  "homepage": "https://github.com/ahito123321/races-assessment#readme",
+  "devDependencies": {
+    "@salesforce/lwc-jest": "^0.4.14"
+  }
+}
