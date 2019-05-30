@@ -1,0 +1,35 @@
+{
+    "compilerOptions": {
+        "experimentalDecorators": true,
+        "baseUrl": ".",
+        "paths": {
+
+            "c/registration": [
+                "registration/registration.js"
+            ], 
+            "c/match": [
+                "../../../../races-assessment/force-app/main/default/lwc/match/match.js"
+            ],
+            "c/pagination": [
+                "../../../../races-assessment/force-app/main/default/lwc/pagination/pagination.js"
+            ],
+            "c/parentComponent": [
+                "../../../../races-assessment/force-app/main/default/lwc/parentComponent/parentComponent.js"
+            ],
+            "c/picklistRaces": [
+                "../../../../races-assessment/force-app/main/default/lwc/picklistRaces/picklistRaces.js"
+            ]
+        },
+        "experimentalDecorators": true, 
+
+    },
+    "include": [
+        "**/*",
+        "../../../../.sfdx/typings/lwc/**/*.d.ts"
+    ],
+    "typeAcquisition": {
+        "include": [
+            "jest"
+        ]
+    }
+}

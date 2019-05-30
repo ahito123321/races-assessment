@@ -1,0 +1,12 @@
+<template>
+        <template if:true={PicklistRaces.data}>
+                <lightning-combobox key={PicklistRaces.Id}
+                                    class='picklist'
+                                    value={PicklistRaces.data.values}
+                                    placeholder="--None--"
+                                    options={PicklistRaces.data.values}
+                                    onchange={handlePicklistChange} >
+                </lightning-combobox>
+          </template>
+
+  </template>
