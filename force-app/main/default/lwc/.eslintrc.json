@@ -1,4 +1,4 @@
 {
-  "extends": ["@salesforce/eslint-config-lwc/recommended"]
- 
+  "extends": ["./eslint.config.js"]
+  
 }
