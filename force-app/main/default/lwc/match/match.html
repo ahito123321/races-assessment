@@ -1,0 +1,116 @@
+<template>
+    <section class="matchGeneralDiv">
+        <div class="matchName">
+        <span>Matches</span>
+    </div>
+
+    <!--PICKLIST-->
+    <div class="realm">
+                  <span class="realmName">Realm</span>
+
+                    <template if:true={Match.data}>
+                        <lightning-combobox key={Match.Id}
+                                            class='picklist'
+                                            value={Match.data.values}
+                                            placeholder="--Any Type--"
+                                            options={Match.data.values}
+                                            onchange={handleComboboxChange} >
+                        </lightning-combobox>
+                  </template>              
+    </div>
+
+    <!--DATA TABLE-->
+    <table aria-multiselectable="true" class="slds-table slds-table_cell-buffer slds-table_bordered"> 
+      <!--TABLE HEAD-->
+        <thead >
+          
+            <tr class="slds-line-height_reset">
+                <th class="slds-text-align_right" scope="col" style="width:3.25rem">
+                    <div class="slds-th__action slds-th__action_form">
+                      <div class="slds-checkbox">
+                        <input type="checkbox" name="options" class="checkAll" id="checkbox-885" value="checkbox-885" tabindex="0" aria-labelledby="check-select-all-label column-group-header" />
+                        <label class="slds-checkbox__label" for="checkbox-885">
+                          <span class="slds-checkbox_faux"></span>
+                        </label>
+                      </div>
+                    </div>
+                  </th>  
+               
+              <th aria-sort="none" class="slds-is-sortable slds-is-resizable slds-text-title_caps" aria-label="Name" scope="col">
+                  <span class="slds-truncate" title="Name">
+                    Match Name
+                  </span>
+              </th>
+
+              <th aria-sort="none" class="slds-is-sortable slds-is-resizable slds-text-title_caps" aria-label="LastName" scope="col">
+                    <span class="slds-truncate" title="LastName">
+                        Race
+                    </span>
+              
+                </th>
+
+                <th aria-sort="none" class="slds-is-sortable slds-is-resizable slds-text-title_caps" aria-label="Date" scope="col">
+                      <span class="slds-truncate" title="Date">
+                        Date
+                        </span>
+                  </th>
+
+                  <th aria-sort="none" class="slds-is-sortable slds-is-resizable slds-text-title_caps" aria-label="Realm" scope="col">
+                        <span class="slds-truncate" title="Realm">
+                          Realm
+                        </span>
+                    </th>
+
+                    <th aria-sort="none" class="slds-is-sortable slds-is-resizable slds-text-title_caps" aria-label="Number of Participants Remaining" scope="col">
+                          <span class="slds-truncate" title="Number of Participants Remaining">
+                            Number of Participants Remaining
+                          </span>             
+                     </th>
+              </tr>                
+         </thead>
+
+<!--TABLE BODY-->
+        <tbody>  
+            <template for:each={currentMathces} for:item="match" for:index="id">
+                <tr key={match.Id} class="slds-hint-parent">
+                    <td class="slds-text-align_right" role="gridcell">
+                        <div class="slds-checkbox">
+                          <input type="checkbox" class="selectMatchByRow" id={id} value={match.Id} />
+                          <label class="slds-checkbox__label" for={id}>
+                            <span class="slds-checkbox_faux"></span>
+                          </label>
+                        </div>
+                      </td>
+                    
+
+                       <td role="gridcell" class="matchNameRow">
+                          <div  class="slds-truncate"><a href="https://races-assessment-dev-ed.lightning.force.com/lightning/r/Match__c/a002v000044MzobAAC/view" target="_blank">{match.Name}</a></div>
+                         </td>
+
+                        
+                       <td role="gridcell" class="coloumn2">
+                          <c-picklist-races onhandlepicklistchange={changeByValue} matchid={match.Id} ></c-picklist-races>
+                         </td>
+                        
+
+                       <td role="gridcell">
+                           <div  class="slds-truncate">{match.Date__c}</div>
+                         </td> 
+
+                        <td role="gridcell">
+                           <div  class="slds-truncate">{match.Realm__c}</div>    
+                         </td>
+
+                         <td role="gridcell">
+                            <div  class="slds-truncate">{match.Number_of_Participants_Remaining__c}</div>    
+                          </td>                    
+                  </tr>               
+              </template>    
+        </tbody>     
+    </table>
+  
+    <p class="slds-m-vertical_medium content">Total records: <b>{totalrecords} </b> Page <b>{currentpage}</b> of  
+      <b> {totalpages}</b></p> 
+                     
+    </section>   
+</template>

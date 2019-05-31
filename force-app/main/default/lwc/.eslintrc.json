@@ -1,0 +1,9 @@
+{
+  "extends": ["@salesforce/eslint-config-lwc/recommended"],
+  "rules": {
+    "no-console": "off",
+    "no-alert": "off"
+}
+}
+
+

@@ -1,0 +1,64 @@
+* {
+     margin: 0;
+     padding: 0;
+ }
+ .matchGeneralDiv {
+ width: 100%;
+ height: 450px;
+}
+
+
+.matchName { 
+    background-color: #42bff4;
+    padding-left: 20px;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 17px;
+    font-weight: bold;
+    height: 30px;
+    width: 100%; 
+    margin-bottom: 15px;
+    
+}
+
+.realmName {
+    font-size: 17px;
+    margin-left: 110px;
+}
+
+
+p {
+    font-size: 17px;
+    margin-left: 20px;
+}
+
+.picklist {
+    width: 180px;
+    margin-left: 10%;
+    top: -50px;
+
+}
+
+
+.matchNameRow {
+    width: 200px;
+}
+
+.coloumn2 {
+    width: 250px;
+}
+
+
+
+.realm {
+    background-color: #fff;
+    height: 40px;
+ 
+}
+
+.lgc-bg {
+    background-color: rgb(242, 242, 242);
+}
+
+.lgc-bg-inverse {
+    background-color: rgb(22, 50, 92);
+}
