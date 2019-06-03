@@ -48,15 +48,18 @@ export default class Match extends LightningElement {
    changeByValue(event) {
     let checked = this.template.querySelectorAll('.selectMatchByRow');
     checked.forEach(checkbox => {
-     if (event.detail.id === checkbox.value ) {
+     if ( event.detail.id === checkbox.value ) {
        checkbox.checked = true;
-     } if (event.detail.id === checkbox.value === '--None--') {
-       checkbox.checked = false;
-     }
+     } 
     });
     console.log({...  event.detail});
      
    }
+
+   redirectToDetail = (event) => {
+    event.preventDefault();  
+    window.open(`https://races-assessment-dev-ed.lightning.force.com/lightning/r/Match__c/${event.target.dataset.id}/view`, '_blank');  
+   };
 
 
    //picklistRealm
