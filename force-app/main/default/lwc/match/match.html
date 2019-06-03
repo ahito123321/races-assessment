@@ -75,7 +75,7 @@
                 <tr key={match.Id} class="slds-hint-parent">
                     <td class="slds-text-align_right" role="gridcell">
                         <div class="slds-checkbox">
-                          <input type="checkbox" class="selectMatchByRow" id={id} value={match.Id} />
+                          <input type="checkbox" class="selectMatchByRow" onclick={getValueCheckbox} id={id} value={match.Id} />
                           <label class="slds-checkbox__label" for={id}>
                             <span class="slds-checkbox_faux"></span>
                           </label>

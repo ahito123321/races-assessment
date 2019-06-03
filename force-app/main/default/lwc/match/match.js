@@ -23,6 +23,7 @@ export default class Match extends LightningElement {
   @api matchid;
   
   
+  
    totalpages;  
    localCurrentPage = null;  
    isSearchChangeExecuted = false;
@@ -49,11 +50,17 @@ export default class Match extends LightningElement {
     let checked = this.template.querySelectorAll('.selectMatchByRow');
     checked.forEach(checkbox => {
      if ( event.detail.id === checkbox.value ) {
-       checkbox.checked = true;
+       checkbox.checked = event.detail.checked;
      } 
     });
     console.log({...  event.detail});
      
+   }
+
+   getValueCheckbox(event) {
+    this.selectedMatch = event.target.value;
+    console.log(this.selectedMatch);
+
    }
 
    redirectToDetail = (event) => {
