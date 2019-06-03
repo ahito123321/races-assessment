@@ -6,10 +6,9 @@ import OBJECT_NAME from '@salesforce/schema/Participant__c';
 
 export default class PicklistRaces extends LightningElement {
 
-    @api selectedRace;
-    @api matchid; 
+    @api matchid;
+    
    
-  
     @wire(getObjectInfo, { objectApiName : OBJECT_NAME })
         objectInfo;
 
@@ -17,18 +16,15 @@ export default class PicklistRaces extends LightningElement {
   @wire(getPicklistValues, {
             recordTypeId: '$objectInfo.data.defaultRecordTypeId', 
             fieldApiName : RACE_FIELD }) PicklistRaces;
-
-               
+    
 
            handlePicklistChange(event) {
-            this.selectedRace = event.detail.value;
-            if (this.selectedRace === '--None--') return;
-               this.dispatchEvent(new CustomEvent('handlepicklistchange', {
-               detail: { 
-                 id: this.matchid, 
-                 selectedRace: this.selectedRace
-              }
-     
+              this.dispatchEvent(new CustomEvent('handlepicklistchange', {
+                detail: { 
+                  id: this.matchid, 
+                  selectedRace: event.detail.value,
+                  checked: event.detail.value !== '--None--'
+               }
              }));
              
         } 
