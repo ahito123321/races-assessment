@@ -13,6 +13,7 @@ export default class Match extends LightningElement {
   @track Allmatches;
   @track selectedMatch;
   @track currentMathces;
+  @track isLoading;
    
   realm = '';
   
@@ -57,8 +58,10 @@ export default class Match extends LightningElement {
      
    }
 
-   getValueCheckbox(event) {
+   blockPagination(event) {
     this.selectedMatch = event.target.value;
+
+
     console.log(this.selectedMatch);
 
    }
@@ -96,6 +99,7 @@ export default class Match extends LightningElement {
             }  
             this.isSearchChangeExecuted = true;  
             this.localCurrentPage = this.currentpage;
+            this.isLoading = true;
             getMatchCount({ realm: this.realm })  
               .then(recordsCount => {  
                 this.totalrecords = recordsCount;  
@@ -105,7 +109,8 @@ export default class Match extends LightningElement {
                     .then(contactList => { 
                       this.Allmatches = contactList;  
                       this.currentMathces = contactList;
-                      this.error = undefined;  
+                      this.error = undefined; 
+                      this.isLoading = false; 
                     })  
                     .catch(error => {  
                       this.error = error;    
