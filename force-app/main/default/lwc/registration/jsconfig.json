@@ -3,18 +3,6 @@
         "experimentalDecorators": true,
         "baseUrl": ".",
         "paths": {
-            "c/match": [
-                "match/match.js"
-            ],
-            "c/pagination": [
-                "pagination/pagination.js"
-            ],
-            "c/parentComponent": [
-                "parentComponent/parentComponent.js"
-            ],
-            "c/picklistRaces": [
-                "picklistRaces/picklistRaces.js"
-            ],
             "c/registration": [
                 "registration/registration.js"
             ]
