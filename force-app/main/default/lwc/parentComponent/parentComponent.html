@@ -1,6 +1,8 @@
 <template>
+   <div class="generalTable">
+     <c-chart current-match={currentMatch} > </c-chart></div>
             <div class="generalTable">
-                <c-match currentpage={page}  onrecordsload={handleRecordsLoad} pagesize={pagesize}></c-match>  
+                <c-match currentpage={page} onchoose={handleChoose} onrecordsload={handleRecordsLoad} pagesize={pagesize}></c-match>  
                 <div class="slds-m-around_medium">  
                   <c-pagination onprevious={handlePrevious} onnext={handleNext} onfirst={handleFirst}  
                     onlast={handleLast} currentpage={page} totalrecords={totalrecords} pagesize={pagesize}>  

@@ -1,13 +1,19 @@
-import { LightningElement, api } from 'lwc';
+import { LightningElement, api, track } from 'lwc';
+//import { registerListener } from 'c/pubsub';
+//import { CurrentPageReference } from 'lightning/navigation';
 
 const PAGE_SIZE = 5;
 
-export default class PaginationParent extends LightningElement {
+export default class ParentComponent extends LightningElement {
 
     @api page = 1;  
     @api totalrecords;  
-    @api _pagesize = PAGE_SIZE; 
+    @api _pagesize = PAGE_SIZE;
 
+    @track currentMatch;
+
+    //@wire(CurrentPageReference) pageRef;
+    
     get pagesize() {  
       return this._pagesize;  
     }
@@ -15,6 +21,10 @@ export default class PaginationParent extends LightningElement {
     set pagesize(value) {  
       this._pagesize = value;  
     } 
+    
+    //  connectedCallback() {  
+    //    registerListener('choose', this.handleChoose, this);
+    //  }
 
     handlePrevious() {  
       if (this.page > 1) {  
@@ -43,4 +53,10 @@ export default class PaginationParent extends LightningElement {
       this.page = event.detail;  
     }  
     
+
+    handleChoose(event) {
+      this.currentMatch = event.detail.value;
+     
+    }
+   
 }
