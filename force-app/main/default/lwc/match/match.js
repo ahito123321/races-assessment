@@ -5,6 +5,8 @@ import { getPicklistValues} from 'lightning/uiObjectInfoApi';
 import { getObjectInfo } from 'lightning/uiObjectInfoApi';
 import REALM_FIELD from '@salesforce/schema/Match__c.Realm__c';
 import OBJECT_NAME from '@salesforce/schema/Match__c';
+///import { fireEvent } from "../pubsub/pubsub.js";
+//import { CurrentPageReference } from 'lightning/navigation';
 
 
 
@@ -23,9 +25,10 @@ export default class Match extends LightningElement {
   @api selectedRace;
   @api matchid;
   
+ // @wire(CurrentPageReference) pageRef;
   
-  
-   totalpages;  
+   totalpages;
+
    localCurrentPage = null;  
    isSearchChangeExecuted = false;
    
@@ -42,34 +45,45 @@ export default class Match extends LightningElement {
 
     renderedCallback() {
 
-    this.selectMatchByValue(); 
-     
+      this.selectMatchByValue(); 
    }    
+
+   handledispatchFunc(target) {
+      this.dispatchEvent(new CustomEvent( 'choose', {
+        detail: { 
+          match:  this.currentMathces.find(value => value.Id === target.value),
+          checked: target.checked
+      }   
+    }));
+
+   }
+
+   chooseMatchByCheckbox(event) {
+     this.selectedMatch = event.target.value; 
+     this.handledispatchFunc(event.target);
+    
+     
+   }
 
 
    changeByValue(event) {
     let checked = this.template.querySelectorAll('.selectMatchByRow');
     checked.forEach(checkbox => {
-     if ( event.detail.id === checkbox.value ) {
-       checkbox.checked = event.detail.checked;
+     if ( event.detail.id === checkbox.value) {
+       checkbox.checked = event.detail.checked; 
+       this.handledispatchFunc(checkbox);     
      } 
     });
-    console.log({...  event.detail});
-     
+    
    }
 
-   blockPagination(event) {
-    this.selectedMatch = event.target.value;
-
-
-    console.log(this.selectedMatch);
-
-   }
 
    redirectToDetail = (event) => {
     event.preventDefault();  
     window.open(`https://races-assessment-dev-ed.lightning.force.com/lightning/r/Match__c/${event.target.dataset.id}/view`, '_blank');  
    };
+
+   
 
 
    //picklistRealm
@@ -131,10 +145,7 @@ export default class Match extends LightningElement {
               });  
 
            }
-
-         
-
-         
+  
                   
         }
         

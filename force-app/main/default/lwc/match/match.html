@@ -33,7 +33,7 @@
     <template if:false={isLoading}>
     <table aria-multiselectable="true" class="slds-table slds-table_cell-buffer slds-table_bordered"> 
       <!--TABLE HEAD-->
-      <template if:true={currentMathces}>
+      
       <thead >       
             <tr class="slds-line-height_reset">
                 <th class="slds-text-align_right" scope="col" style="width:3.25rem">
@@ -79,7 +79,7 @@
                      </th>
               </tr>                
          </thead>
-        </template>
+       
 
 <!--TABLE BODY-->
         <tbody>  
@@ -87,7 +87,7 @@
                 <tr key={match.Id} class="slds-hint-parent">
                     <td class="slds-text-align_right" role="gridcell">
                         <div class="slds-checkbox">
-                          <input type="checkbox" class="selectMatchByRow" onclick={blockPagination} id={id} value={match.Id} />
+                          <input type="checkbox" class="selectMatchByRow" onclick={chooseMatchByCheckbox} id={id} value={match.Id} />
                           <label class="slds-checkbox__label" for={id}>
                             <span class="slds-checkbox_faux"></span>
                           </label>
