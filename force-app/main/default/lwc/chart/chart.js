@@ -7,9 +7,21 @@ import ChartJs from '@salesforce/resourceUrl/chartjs';
 export default class Chart extends LightningElement {
     @api chartjsInitialized = false;
     @api recordId;
+    @api labels;
     chart;
+    removeItemDataset;
+    addItemDataset;
+    @api currentMatch;
+
+    connectedCallback() {
+        this.removeItemDataset = new CustomEvent('removeItemEvent');
+        this.addItemDataset = new CustomEvent('addItemEvent');
+    }
+
+
 
     renderedCallback() {
+        console.log('render');
          if (this.chartjsInitialized) {
            return;
           }
@@ -33,24 +45,24 @@ export default class Chart extends LightningElement {
             datasets: [
                 {
                     label:'Day',
-                    data: [110, 290, 150, 250, 500, 420, 100],
+                    data: [190, 290, 150, 250, 500, 420, 100],
                 backgroundColor: [
-                    'rgba(255, 99, 132, 0.2)',
-                    'rgba(54, 162, 235, 0.2)',
-                    'rgba(255, 206, 86, 0.2)',
-                    'rgba(75, 192, 192, 0.2)',
-                    'rgba(153, 102, 255, 0.2)',
-                    'rgba(255, 159, 64, 0.2)',
-                    'rgba(255, 159, 64, 0.2)'
+                    'rgb(0, 153, 255)',
+                    'rgb(0, 153, 255)',
+                    'rgb(0, 153, 255)',
+                    'rgb(0, 153, 255)',
+                    'rgb(0, 153, 255)',
+                    'rgb(0, 153, 255)',
+                    'rgb(0, 153, 255)'
                 ],
                 borderColor: [
-                    'rgba(255, 99, 132, 1)',
-                    'rgba(54, 162, 235, 1)',
-                    'rgba(255, 206, 86, 1)',
-                    'rgba(75, 192, 192, 1)',
-                    'rgba(153, 102, 255, 1)',
-                    'rgba(255, 159, 64, 1)',
-                    'rgba(255, 159, 64, 1)'
+                    'rgb(0, 153, 255)',
+                    'rgb(0, 153, 255)',
+                    'rgb(0, 153, 255)',
+                    'rgb(0, 153, 255)',
+                    'rgb(0, 153, 255)',
+                    'rgb(0, 153, 255)',
+                    'rgb(0, 153, 255)'
                 ],
                 borderWidth: 1
             }]
