@@ -7,6 +7,7 @@ import OBJECT_NAME from '@salesforce/schema/Participant__c';
 export default class PicklistRaces extends LightningElement {
 
     @api matchid;
+    @api isError = false;
     
    
     @wire(getObjectInfo, { objectApiName : OBJECT_NAME })
@@ -23,7 +24,7 @@ export default class PicklistRaces extends LightningElement {
                 detail: { 
                   id: this.matchid, 
                   selectedRace: event.detail.value,
-                  checked: event.detail.value !== '--None--'
+                  checked: event.detail.value 
                }
              }));
              
