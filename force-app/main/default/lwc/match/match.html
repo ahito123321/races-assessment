@@ -16,110 +16,108 @@
                                             options={Match.data.values}
                                             onchange={handleComboboxChange} >
                         </lightning-combobox>
-                  </template>              
+                    </template>              
     </div>
 
-    <!--DATA TABLE-->
-    <!--SPINNER-->
-    <template if:true={isLoading}><div class="demo-only" style="height:6rem">
-        <div class="slds-spinner_container">
-          <div role="status" class="slds-spinner slds-spinner_medium slds-spinner_brand">
-            <span class="slds-assistive-text">Loading</span>
-            <div class="slds-spinner__dot-a"></div>
-            <div class="slds-spinner__dot-b"></div>
-          </div>
-        </div>
-      </div></template>
-    <template if:false={isLoading}>
-    <table aria-multiselectable="true" class="slds-table slds-table_cell-buffer slds-table_bordered"> 
-      <!--TABLE HEAD-->
-      
-      <thead >       
-            <tr class="slds-line-height_reset">
-                <th class="slds-text-align_right" scope="col" style="width:3.25rem">
-                    <div class="slds-th__action slds-th__action_form">
-                      <div class="slds-checkbox">
-                        <input type="checkbox" name="options" class="checkAll" id="checkbox-885" value="checkbox-885" onclick={getValueCheckbox} />
-                        <label class="slds-checkbox__label" for="checkbox-885">
-                          <span class="slds-checkbox_faux"></span>
-                        </label>
-                      </div>
-                    </div>
-                  </th>  
+          <!--DATA TABLE-->
+          <!--SPINNER-->
+          <template if:true={isLoading}><div class="demo-only" style="height:6rem">
+              <div class="slds-spinner_container">
+                <div role="status" class="slds-spinner slds-spinner_medium slds-spinner_brand">
+                  <span class="slds-assistive-text">Loading</span>
+                  <div class="slds-spinner__dot-a"></div>
+                  <div class="slds-spinner__dot-b"></div>
+                </div>
+              </div>
+            </div></template>
+       <template if:false={isLoading}>
+        <table class="slds-table slds-table_cell-buffer slds-table_bordered">
+
+          <!--TABLE HEAD-->
+          <thead >       
+                <tr class="slds-line-height_reset">
+                    <th class="slds-text-align_right" scope="col" style="width:3.25rem">
+                        <div class="slds-th__action slds-th__action_form">
+                          <div class="slds-checkbox">
+                            <input type="checkbox" class="checkAll" id="checkboxHead" value="checkboxHead" />
+                            <label class="slds-checkbox__label" for="checkboxHead">
+                              <span class="slds-checkbox_faux"></span>
+                            </label>
+                          </div>
+                        </div>
+                      </th>  
                
-              <th aria-sort="none" class="slds-is-sortable slds-is-resizable slds-text-title_caps" aria-label="Name" scope="col">
-                  <span class="slds-truncate" title="Name">
-                    Match Name
-                  </span>
-              </th>
-
-              <th aria-sort="none" class="slds-is-sortable slds-is-resizable slds-text-title_caps" aria-label="LastName" scope="col">
-                    <span class="slds-truncate" title="LastName">
-                        Race
-                    </span>
-              
-                </th>
-
-                <th aria-sort="none" class="slds-is-sortable slds-is-resizable slds-text-title_caps" aria-label="Date" scope="col">
-                      <span class="slds-truncate" title="Date">
-                        Date
-                        </span>
-                  </th>
-
-                  <th aria-sort="none" class="slds-is-sortable slds-is-resizable slds-text-title_caps" aria-label="Realm" scope="col">
-                        <span class="slds-truncate" title="Realm">
-                          Realm
+                    <th class="slds-is-sortable slds-is-resizable slds-text-title_caps" aria-label="Name" scope="col">
+                        <span class="slds-truncate" title="Name">
+                          Match Name
                         </span>
                     </th>
 
-                    <th aria-sort="none" class="slds-is-sortable slds-is-resizable slds-text-title_caps" aria-label="Number of Participants Remaining" scope="col">
-                          <span class="slds-truncate" title="Number of Participants Remaining">
-                            Number of Participants Remaining
-                          </span>             
-                     </th>
-              </tr>                
-         </thead>
-       
-
-<!--TABLE BODY-->
-        <tbody>  
-            <template for:each={currentMathces} for:item="match" for:index="id">
-                <tr key={match.Id} class="slds-hint-parent">
-                    <td class="slds-text-align_right" role="gridcell">
-                        <div class="slds-checkbox">
-                          <input type="checkbox" class="selectMatchByRow" onclick={chooseMatchByCheckbox} id={id} value={match.Id} />
-                          <label class="slds-checkbox__label" for={id}>
-                            <span class="slds-checkbox_faux"></span>
-                          </label>
-                        </div>
-                      </td>
+                    <th class="slds-is-sortable slds-is-resizable slds-text-title_caps" aria-label="LastName" scope="col">
+                          <span class="slds-truncate" title="LastName">
+                           Race
+                          </span>
                     
+                      </th>
 
-                       <td role="gridcell" class="matchNameRow">
-                          <div  class="slds-truncate"><a href="#" target="_blank" onclick={redirectToDetail} data-id={match.Id}>{match.Name}</a></div>
-                         </td>
+                      <th class="slds-is-sortable slds-is-resizable slds-text-title_caps" aria-label="Date" scope="col">
+                            <span class="slds-truncate" title="Date">
+                              Date
+                            </span>
+                        </th>
 
-                        
-                       <td role="gridcell" class="coloumn2">
-                          <c-picklist-races onhandlepicklistchange={changeByValue} matchid={match.Id} ></c-picklist-races>
-                         </td>
-                        
+                        <th class="slds-is-sortable slds-is-resizable slds-text-title_caps" aria-label="Realm" scope="col">
+                              <span class="slds-truncate" title="Realm">
+                               Realm
+                              </span>
+                          </th>
 
-                       <td role="gridcell">
-                           <div  class="slds-truncate">{match.Date__c}</div>
-                         </td> 
+                          <th class="slds-is-sortable slds-is-resizable slds-text-title_caps" aria-label="Number of Participants Remaining" scope="col">
+                                <span class="slds-truncate" title="Number of Participants Remaining">
+                                  Number of Participants Remaining
+                                </span>             
+                          </th>
+                    </tr>                
+           </thead>
+       
+            <!--TABLE BODY-->
+            <tbody>  
+                <template for:each={currentMathces} for:item="match" for:index="id">
+                    <tr key={match.Id} class="slds-hint-parent">
+                        <td class="slds-text-align_right" role="gridcell">
+                            <div class="slds-checkbox">
+                              <input type="checkbox" class="selectMatchByRow" onclick={chooseMatchByCheckbox} id={id} value={match.Id} />
+                              <label class="slds-checkbox__label" for={id}>
+                                <span class="slds-checkbox_faux"></span>
+                              </label>
+                            </div>
+                          </td>
+                    
+                            <td role="gridcell" class="matchNameRow">
+                                <div  class="slds-truncate"><a href="#" target="_blank" onclick={redirectToDetail} data-id={match.Id}>{match.Name}</a></div>
+                              </td>
 
-                        <td role="gridcell">
-                           <div  class="slds-truncate">{match.Realm__c}</div>    
-                         </td>
+                              
+                            <td role="gridcell" class="coloumn2">
+                                <c-picklist-races onhandlepicklistchange={changeByValue} matchid={match.Id} ></c-picklist-races>
+                              </td>
+                              
 
-                         <td role="gridcell">
-                            <div  class="slds-truncate">{match.Number_of_Participants_Remaining__c}</div>    
-                          </td>                    
-                  </tr>               
-              </template>    
-        </tbody>     
-    </table>
+                            <td role="gridcell">
+                                <div  class="slds-truncate">{match.Date__c}</div>
+                              </td> 
+
+                              <td role="gridcell">
+                                <div  class="slds-truncate">{match.Realm__c}</div>    
+                              </td>
+
+                              <td role="gridcell">
+                                  <div  class="slds-truncate">{match.Number_of_Participants_Remaining__c}</div>    
+                                </td>                    
+                            </tr>               
+                        </template>    
+                  </tbody>     
+            </table>
  
   
     <p class="slds-m-vertical_medium content">Total records: <b>{totalrecords} </b> Page <b>{currentpage}</b> of  
