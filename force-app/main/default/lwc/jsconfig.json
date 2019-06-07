@@ -3,6 +3,9 @@
         "experimentalDecorators": true,
         "baseUrl": ".",
         "paths": {
+            "c/chart": [
+                "chart/chart.js"
+            ],
             "c/match": [
                 "match/match.js"
             ],
@@ -14,6 +17,9 @@
             ],
             "c/picklistRaces": [
                 "picklistRaces/picklistRaces.js"
+            ],
+            "c/pubsub": [
+                "pubsub/pubsub.js"
             ],
             "c/registration": [
                 "registration/registration.js"
