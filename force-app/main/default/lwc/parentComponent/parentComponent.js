@@ -14,40 +14,39 @@ export default class ParentComponent extends LightningElement {
 
         @wire(CurrentPageReference) pageRef;
         
-        get pagesize() {  
-          return this._pagesize;  
-        }
+        // get pagesize() {  
+        //   return this._pagesize;  
+        // }
 
-        set pagesize(value) {  
-          this._pagesize = value;  
-        } 
+        // set pagesize(value) {  
+        //   this._pagesize = value;  
+        // } 
                  
 
-        handlePrevious() {  
-          if (this.page > 1) {  
-            this.page = this.page - 1;  
-          }  
-        } 
+        // handlePrevious() {  
+        //   if (this.page > 1) {  
+        //     this.page = this.page - 1;  
+        //   }  
+        // } 
 
-        handleNext() {  
-          if (this.page < this.totalPages)  
-            this.page = this.page + 1;  
-        }
+        // handleNext() {  
+        //   if (this.page < this.totalPages)  
+        //     this.page = this.page + 1;  
+        // }
 
-        handleFirst() {  
-          this.page = 1;  
-        }  
-        handleLast() {  
-          this.page = this.totalPages;  
-        }
+        // handleFirst() {  
+        //   this.page = 1;  
+        // }  
+        // handleLast() {  
+        //   this.page = this.totalPages;  
+        // }
 
-        handleRecordsLoad(event) {  
-          this.totalrecords = event.detail;  
-          this.totalPages = Math.ceil(this.totalrecords / this.pagesize);  
-        } 
+        // handleRecordsLoad(event) {  
+        //   this.totalrecords = event.detail;  
+        //   this.totalPages = Math.ceil(this.totalrecords / this.pagesize);  
+        // } 
 
-        handlePageChange(event) {  
-          this.page = event.detail;  
-        }  
-   
+        // handlePageChange(event) {  
+        //   this.page = event.detail;  
+        // }  
 }

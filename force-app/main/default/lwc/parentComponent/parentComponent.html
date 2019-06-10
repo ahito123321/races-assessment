@@ -1,12 +1,10 @@
 <template>
    <div class="chart">
-      <c-chart current-match={currentMatch} > </c-chart></div>
+      <c-chart current-match={currentMatch} ></c-chart></div>
             <div class="generalTable">
-                <c-match currentpage={page} onrecordsload={handleRecordsLoad} pagesize={pagesize}></c-match>  
+                <c-match ></c-match>  
                 <div class="slds-m-around_medium">  
-                  <c-pagination onprevious={handlePrevious} onnext={handleNext} onfirst={handleFirst}  
-                    onlast={handleLast} currentpage={page} totalrecords={totalrecords} pagesize={pagesize}>  
-                  </c-pagination>  
+                  <c-pagination ></c-pagination>   
                 </div>  
               </div>                 
 </template>
