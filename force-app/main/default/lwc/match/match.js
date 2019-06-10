@@ -1,11 +1,10 @@
 import { LightningElement, wire, api, track } from 'lwc';
 import getMatchesList from '@salesforce/apex/MatchesController.getMatchesList';
-import getMatchCount from '@salesforce/apex/MatchesController.getMatchCount';
 import { getPicklistValues } from 'lightning/uiObjectInfoApi';
 import { getObjectInfo } from 'lightning/uiObjectInfoApi';
 import REALM_FIELD from '@salesforce/schema/Match__c.Realm__c';
 import OBJECT_NAME from '@salesforce/schema/Match__c';
-import { fireEvent } from 'c/pubsub';
+import { fireEvent, registerListener } from 'c/pubsub';
 import { CurrentPageReference } from 'lightning/navigation';
 
 
@@ -16,7 +15,6 @@ export default class Match extends LightningElement {
   @track selectedMatch;
   @track currentMathces;
   @track isLoading;
-  @track isError = false;
    
   realm = '';
   
@@ -28,34 +26,42 @@ export default class Match extends LightningElement {
   
   @wire(CurrentPageReference) pageRef;
   
-   totalpages;
+   totalpage;
 
-   localCurrentPage = null;  
-   isSearchChangeExecuted = false;
    
-
-          pageSizeOptions =  
-            [  
-              { label: '5', value: 5 },  
-              { label: '10', value: 10 },  
-              { label: '25', value: 25 },  
-              { label: '50', value: 50 },  
-              { label: 'All', value: '' },  
-            ];  
-    
              
             // run code when a component renders, this hook flows from child to parent
-             renderedCallback() {
-              this.selectMatchByValue();
-            }    
-            
+            connectedCallback() {
+             registerListener('changeCurrentPageEvent' , this.handleChangeCurrentPageEvent, this);
+             this.selectMatchByValue();
+            }
+
+            handleChangeCurrentPageEvent(event) {
+              this.isLoading = true;
+              let detail = event.detail;
+              this.currentpage = detail.currentpage;
+              this.totalpage = Math.ceil(this.totalrecords / detail.pagesize );
+              this.currentMathces = this.allMatches.filter((match, index ) => {           
+                  return detail.currentpage === Math.ceil((index + 1) / detail.pagesize);                
+                }).map(value => {
+                  return {
+                    ...value,
+                    currentValuePicklist: '--None--'
+                  };
+                });
+              this.isLoading = false;   
+              
+            }
+
+
             // fire event for determine current matches by id and ckeched checkbox
-            handledispatchFunc = (target, selectedRace = '--None--') => {
-                fireEvent(this.pageRef, 'blockPaginationEvent', {
-                  detail: { 
-                    match:  this.currentMathces.find(value => value.Id === target.value),
-                    checked: target.checked,
-                    picklistValue: selectedRace   
+            handleBlockPagination = (target) => {
+              let match = this.currentMathces.find(value => value.Id === target.value);
+              fireEvent(this.pageRef, 'blockPaginationEvent', {
+                detail: { 
+                  match: match,
+                  checked: target.checked,
+                  picklistValue: match.currentValuePicklist   
                 }
               }); 
             };
@@ -63,7 +69,7 @@ export default class Match extends LightningElement {
             // choose match by checkbox
             chooseMatchByCheckbox = (event) => {
               this.selectedMatch = event.target.value; 
-              this.handledispatchFunc(event.target);
+              this.handleBlockPagination(event.target);
               
             }
  
@@ -71,10 +77,12 @@ export default class Match extends LightningElement {
             changeByValue = (event) => {
               let checked = this.template.querySelectorAll('.selectMatchByRow');
               checked.forEach(checkbox => {
-              if ( event.detail.id === checkbox.value ) {
-                checkbox.checked = event.detail.checked;
-                this.handledispatchFunc(checkbox, event.detail.selectedRace); 
-              }         
+                if (event.detail.id === checkbox.value ) {
+                  let match = this.currentMathces.find(value => value.Id === event.detail.id);
+                  match.currentValuePicklist = event.detail.selectedRace;
+                  checkbox.checked = event.detail.checked;
+                  this.handleBlockPagination(checkbox); 
+                }         
               });  
             };
 
@@ -84,8 +92,6 @@ export default class Match extends LightningElement {
             redirectToDetail = (event) => {
               window.open(`https://races-assessment-dev-ed.lightning.force.com/lightning/r/Match__c/${event.target.dataset.id}/view`, '_blank');  
             };
-
-   
 
 
             // picklistRealm
@@ -103,7 +109,6 @@ export default class Match extends LightningElement {
 
               this.selectedMatch = event.detail.value;
               this.currentpage = 1;
-              this.isSearchChangeExecuted = false;
               this.realm = (this.selectedMatch === '--Any Type--') ? '' : `where Realm__c = '${this.selectedMatch}'`;
               this.selectMatchByValue();
               
@@ -111,41 +116,23 @@ export default class Match extends LightningElement {
 
               // function for determine data from base and their logic  
               selectMatchByValue() {
-
-                if (this.isSearchChangeExecuted && (this.localCurrentPage === this.currentpage)) {  
-                  return;  
-                }  
-                this.isSearchChangeExecuted = true;  
-                this.localCurrentPage = this.currentpage;
                 this.isLoading = true;
-                getMatchCount({ realm: this.realm })  
-                  .then(recordsCount => {  
-                    this.totalrecords = recordsCount;  
-                    if (recordsCount !== 0 && !isNaN(recordsCount)) {  
-                      this.totalpages = Math.ceil(recordsCount / this.pagesize);  
-                      getMatchesList({ realm: this.realm, pagenumber: this.currentpage, numberOfRecords: recordsCount, pageSize: this.pagesize  })  
-                        .then(contactList => { 
-                          this.allMatches = contactList;  
-                          this.currentMathces = contactList;
-                          this.isLoading = false; 
-                        })  
-                        .catch(error => {  
-                          this.error = error;    
-                        });  
-                        } else {  
-                          this.allMatches = [];  
-                          this.totalpages = 1;  
-                          this.totalrecords = 0;  
-                        }  
-                        this.dispatchEvent(new CustomEvent( 'recordsload', {  
-                          detail: recordsCount  
-                        }));     
-                      })  
-                      .catch(error => {  
-                        this.error = error;   
-                      });  
+                fireEvent(this.pageRef, 'changeTotalRecordsEvent', { detail: 0 });       
+                getMatchesList({ realm: this.realm  })  
+                  .then(listOfMatches => {
+                    this.allMatches = listOfMatches;
+                    this.totalrecords = listOfMatches.length;
+                    fireEvent(this.pageRef, 'changeTotalRecordsEvent', { detail: this.totalrecords });
+                    
+                      
+                  })  
+                  .catch(error => {  
+                    this.error = error;    
+                  });  
+                }
               }         
-        }
+        
+
         
       
       
