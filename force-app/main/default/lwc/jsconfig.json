@@ -3,6 +3,15 @@
         "experimentalDecorators": true,
         "baseUrl": ".",
         "paths": {
+            "c/chart": [
+                "chart/chart.js"
+            ],
+            "c/formForNewRegistrations": [
+                "formForNewRegistrations/formForNewRegistrations.js"
+            ],
+            "c/listOfAllRegistrations": [
+                "listOfAllRegistrations/listOfAllRegistrations.js"
+            ],
             "c/match": [
                 "match/match.js"
             ],
@@ -15,11 +24,17 @@
             "c/picklistRaces": [
                 "picklistRaces/picklistRaces.js"
             ],
-            "c/listOfAllRegistrations": [
-                "listOfAllRegistrations/listOfAllRegistrations.js"
+            "c/pubsub": [
+                "pubsub/pubsub.js"
             ],
-            "c/helloWorld": [
-                "helloWorld/helloWorld.js"
+            "c/registration": [
+                "registration/registration.js"
+            ],
+            "c/registrationB": [
+                "registrationB/registrationB.js"
+            ],
+            "c/registrationsTable": [
+                "registrationsTable/registrationsTable.js"
             ]
         }
     },

@@ -1,11 +1,11 @@
 <template>
         <lightning-layout>  
                 <lightning-layout-item>  
-                  <lightning-button label="First" icon-name="utility:chevronleft" onclick={handleFirst}  
+                  <lightning-button label="First"  class="firstButton" icon-name="utility:chevronleft" icon-position="left" onclick={handleFirst}  
                     disabled={showFirstButton}></lightning-button>  
                 </lightning-layout-item>  
                 <lightning-layout-item>  
-                  <lightning-button label="Previous" variant="brand" icon-name="utility:chevronleft" onclick={handlePrevious}  
+                  <lightning-button label="Previous" class="previousButton" variant="brand" icon-name="utility:chevronleft" icon-position="left" onclick={handlePrevious}  
                     disabled={showFirstButton}></lightning-button>  
                 </lightning-layout-item>  
                 <lightning-layout-item flexibility="grow"></lightning-layout-item>  
@@ -14,7 +14,7 @@
                     disabled={showLastButton}></lightning-button>  
                 </lightning-layout-item>  
                 <lightning-layout-item>  
-                  <lightning-button label="Last" icon-name="utility:chevronright" icon-position="right" onclick={handleLast}  
+                  <lightning-button label="Last"  class="lastButton" icon-name="utility:chevronright" icon-position="right" onclick={handleLast}  
                     disabled={showLastButton}></lightning-button>  
                 </lightning-layout-item>  
               </lightning-layout>  

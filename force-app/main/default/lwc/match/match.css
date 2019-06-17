@@ -2,14 +2,15 @@
      margin: 0;
      padding: 0;
  }
+
  .matchGeneralDiv {
- width: 100%;
- height: 450px;
+    width: 100%;
+    height: 450px;
+    position: relative;
 }
 
-
 .matchName { 
-    background-color: #42bff4;
+    background-color: #4db8ff;
     padding-left: 20px;
     font-family: 'Courier New', Courier, monospace;
     font-size: 17px;
@@ -38,7 +39,6 @@ p {
 
 }
 
-
 .matchNameRow {
     width: 200px;
 }
@@ -47,18 +47,9 @@ p {
     width: 250px;
 }
 
-
-
 .realm {
     background-color: #fff;
     height: 40px;
  
 }
 
-.lgc-bg {
-    background-color: rgb(242, 242, 242);
-}
-
-.lgc-bg-inverse {
-    background-color: rgb(22, 50, 92);
-}

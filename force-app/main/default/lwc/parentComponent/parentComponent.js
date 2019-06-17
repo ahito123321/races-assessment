@@ -1,46 +1,52 @@
-import { LightningElement, api } from 'lwc';
+import { LightningElement, api, track, wire } from 'lwc';
+import { CurrentPageReference } from 'lightning/navigation';
 
 const PAGE_SIZE = 5;
 
-export default class PaginationParent extends LightningElement {
+export default class ParentComponent extends LightningElement {
 
     @api page = 1;  
     @api totalrecords;  
-    @api _pagesize = PAGE_SIZE; 
+    @api _pagesize = PAGE_SIZE;
 
-    get pagesize() {  
-      return this._pagesize;  
-    }
+    @track currentMatch;
+    @api isError = false;
 
-    set pagesize(value) {  
-      this._pagesize = value;  
-    } 
+        @wire(CurrentPageReference) pageRef;
+        
+        // get pagesize() {  
+        //   return this._pagesize;  
+        // }
 
-    handlePrevious() {  
-      if (this.page > 1) {  
-        this.page = this.page - 1;  
-      }  
-    } 
+        // set pagesize(value) {  
+        //   this._pagesize = value;  
+        // } 
+                 
 
-    handleNext() {  
-      if (this.page < this.totalPages)  
-        this.page = this.page + 1;  
-    }
+        // handlePrevious() {  
+        //   if (this.page > 1) {  
+        //     this.page = this.page - 1;  
+        //   }  
+        // } 
 
-    handleFirst() {  
-      this.page = 1;  
-    }  
-    handleLast() {  
-      this.page = this.totalPages;  
-    }
+        // handleNext() {  
+        //   if (this.page < this.totalPages)  
+        //     this.page = this.page + 1;  
+        // }
 
-    handleRecordsLoad(event) {  
-      this.totalrecords = event.detail;  
-      this.totalPages = Math.ceil(this.totalrecords / this.pagesize);  
-    } 
+        // handleFirst() {  
+        //   this.page = 1;  
+        // }  
+        // handleLast() {  
+        //   this.page = this.totalPages;  
+        // }
 
-    handlePageChange(event) {  
-      this.page = event.detail;  
-    }  
-    
+        // handleRecordsLoad(event) {  
+        //   this.totalrecords = event.detail;  
+        //   this.totalPages = Math.ceil(this.totalrecords / this.pagesize);  
+        // } 
+
+        // handlePageChange(event) {  
+        //   this.page = event.detail;  
+        // }  
 }
