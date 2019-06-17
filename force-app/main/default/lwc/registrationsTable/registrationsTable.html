@@ -1,0 +1,38 @@
+<template>
+        <table class="slds-table slds-table_cell-buffer slds-table_bordered">
+            <!--TABLE HEAD-->
+            <thead >       
+                <tr class="slds-line-height_reset">
+                    <th class="slds-is-sortable slds-is-resizable slds-text-title_caps" aria-label="Name" scope="col">
+                        <span class="slds-truncate" title="Name">
+                            Registration Name
+                        </span>
+                    </th> 
+                </tr>                
+            </thead>
+         
+              <!--TABLE BODY-->
+            <tbody>  
+                <template for:each={listOfRegistrations.data} for:item="registration">
+                    <tr key={registration.Id}  class="slds-hint-parent">
+                        <td role="gridcell" class="RegistrationNameRow">
+                            <div  class="slds-truncate"><a href="#" onclick={redirectToDetail}>{registration.Name}</a></div>
+                        </td>
+
+                        <td class="slds-is-sortable slds-is-resizable slds-text-title_caps" aria-label="Name">
+                            <div class="slds-p-around_small lgc-bg button-menu-style">
+                                <lightning-button-menu alternative-text="Show menu">
+                                    <lightning-menu-item value={registration.Id} label="Edit" onclick={handlerEditButton}></lightning-menu-item>
+                                    <lightning-menu-item value={registration.Id} label="Delete" onclick={wipeRegistration}></lightning-menu-item>
+                                </lightning-button-menu>
+                            </div>
+                        </td>
+                    </tr>               
+                </template>    
+            </tbody>     
+        </table>
+    </template>
+
+    <!-- <a href="" target="_blank" onclick={redirectToDetail}></a>
+    data-id={match.Id
+    -->
