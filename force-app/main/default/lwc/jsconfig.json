@@ -4,16 +4,22 @@
         "baseUrl": ".",
         "paths": {
             "c/match": [
-                "../../../../races-assessment/force-app/main/default/lwc/match/match.js"
+                "match/match.js"
             ],
             "c/pagination": [
-                "../../../../races-assessment/force-app/main/default/lwc/pagination/pagination.js"
+                "pagination/pagination.js"
             ],
             "c/parentComponent": [
-                "../../../../races-assessment/force-app/main/default/lwc/parentComponent/parentComponent.js"
+                "parentComponent/parentComponent.js"
             ],
             "c/picklistRaces": [
-                "../../../../races-assessment/force-app/main/default/lwc/picklistRaces/picklistRaces.js"
+                "picklistRaces/picklistRaces.js"
+            ],
+            "c/listOfAllRegistrations": [
+                "listOfAllRegistrations/listOfAllRegistrations.js"
+            ],
+            "c/helloWorld": [
+                "helloWorld/helloWorld.js"
             ]
         }
     },
