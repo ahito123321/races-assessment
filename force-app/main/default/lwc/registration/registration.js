@@ -7,12 +7,17 @@ import grabLinksNickName                        from '@salesforce/apex/GetContac
 import {updateRecord}                           from 'lightning/uiRecordApi';
 import { ShowToastEvent }                       from 'lightning/platformShowToastEvent';
 import REGISTRATION__C_ID                       from '@salesforce/schema/Registration__c.Id';
-import REGISTRATION__C_ARRIVALDATE__C           from '@salesforce/schema/Registration__c.ArrivalDate__c';
+import REGISTRATION__C_ARRIVALDATE__C           from '@salesforce/schema/Registration__c.Arrival_Date__c';
 import REGISTRATION__C_CONTACT__C               from '@salesforce/schema/Registration__c.Contact__c';
-import REGISTRATION__C_NUMBEROFMATCHESPAIDFOR_C from '@salesforce/schema/Registration__c.NumberOfMatchesPaidFor__c';
+import REGISTRATION__C_NUMBEROFMATCHESPAIDFOR_C from '@salesforce/schema/Registration__c.Number_of_Matches_Paid_For__c';
 import REGISTRATION__C_NAME                     from '@salesforce/schema/Registration__c.Name';
 
+import { CurrentPageReference }              from 'lightning/navigation';
+import { fireEvent }                         from 'c/pubsub';
+
 export default class Registration extends LightningElement {
+    @wire(CurrentPageReference) pageRef;
+
     registrationIDShower;
     updateRegistration(){
  
@@ -30,10 +35,11 @@ export default class Registration extends LightningElement {
                 this.dispatchEvent(
                     new ShowToastEvent({
                         title: 'Success',
-                        message: 'Registration: '+this.registrationID +' has been updated.',
+                        message: 'Registration: '+this.inputedNickData +' has been updated.',
                         variant: 'success',
                     }),
                 );
+                window.location.href = `/lightning/n/Registrations_list`; 
             })
             .catch(error => {
                 console.log('bad'); 
@@ -68,8 +74,9 @@ export default class Registration extends LightningElement {
 
 
     registrationPrefillder() {
-        let arr = window.location.href.split('/');
-        let chosenArrayExample = arr[6].toString();
+        let arr = window.location.href.split('#');
+        console.log(arr.length);
+        let chosenArrayExample = arr[1].toString();
 
         grabLinksNickName ({grabEdLinksNickName: chosenArrayExample})
             .then (result => {
@@ -77,10 +84,10 @@ export default class Registration extends LightningElement {
                     this.registrationID = result[0].Id;
                     this.prefilledNickName = result[0].Name;
                     this.prefilledContact = result[0].Contact__r.Name;
-                    this.prefilledArrivalDate = result[0].ArrivalDate__c;
-                    this.prefilledNumberOfMatchesPaidFor = result[0].NumberOfMatchesPaidFor__c;
-                    this.prefilledNumberOfMatchesRemaining = result[0].NumberOfMatchesRemaining__c;
-                    this.prefilledNumberOfMatchesScheduled = result[0].NumberOfMatchesScheduled__c;
+                    this.prefilledArrivalDate = result[0].Arrival_Date__c;
+                    this.prefilledNumberOfMatchesPaidFor = result[0].Number_of_Matches_Paid_For__c;
+                    this.prefilledNumberOfMatchesRemaining = result[0].Number_of_Matches_Remaining__c;
+                    this.prefilledNumberOfMatchesScheduled = result[0].Number_of_Matches_Scheduled__c;
                 } else {
                         this.prefilledNickName = ' ';
                         this.prefilledContact = '';
@@ -93,6 +100,15 @@ export default class Registration extends LightningElement {
             }) 
             .catch(error => {
                 this.error = error;
+            });
+
+
+            fireEvent(this.pageRef, "registrationPrefillder", {
+                detail: {
+                    registrationID : this.registrationID,
+                    registrationAD : this.prefilledArrivalDate
+                }
+                
             });
     }
  
@@ -154,7 +170,7 @@ export default class Registration extends LightningElement {
             if (result.length > 0) {
                 this.prefilledContact = result[0].Name
                 this.contactId = result[0].Id
-                let validator = result[0].Registrations__r;
+                let validator = result[0].Registration__r;
                 this.popUpsController.PopUpContactSelector = false;
                         if (validator === 0 || validator === undefined) {
                             this.popUpsController.openErrorMessWindow = false;
@@ -239,11 +255,10 @@ export default class Registration extends LightningElement {
 
 
     backToMainPage () {
-        window.open(`/lightning/n/Test500`); 
+        window.location.href = `/lightning/n/Registrations_list`; 
     }
 
-
-
+    
     @track dateGetter
     arrivalDateHandler (event) {
         this.dateGetter = event.target.value;
