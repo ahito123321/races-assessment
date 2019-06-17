@@ -1,0 +1,31 @@
+<template>
+    <p class="slds-text-heading_small">{activeSectionMessage}</p>
+
+    <lightning-button onclick={handleToggleSectionD} label="Toggle Section D"></lightning-button>
+
+    <lightning-accordion class="example-accordion"
+                                onesectiontoggle={handleToggleSection}
+                                active-section-name="B">
+        <lightning-accordion-section name="A" label="Accordion Title A">
+            <p>This is the content area for sectionA.</p>
+            <p>Donec vitae tellus egestas, faucibus ipsum ac, imperdiet erat. Nam venenatis non ante at sagittis. Integer vel purus eget nunc semper placerat. Nam tristique quam leo, et posuere enim condimentum quis. Ut sagittis libero id lectus tempor maximus. Nunc ut tincidunt eros, a hendrerit leo. Suspendisse quis fermentum dolor. Nulla euismod consectetur leo, id condimentum nunc consequat quis.</p>
+        </lightning-accordion-section>
+
+        <lightning-accordion-section name="B" label="Accordion Title B">
+            <p>This is the content area for section B.</p>
+            <p>Some kind of Lat for section B</p>
+        </lightning-accordion-section>
+
+        <lightning-accordion-section name="C" label="Accordion Titile C">
+            <p>This is the content for section C.</p>
+            <p>Some kind of Lat for section C</p>
+        </lightning-accordion-section>
+
+        <template if:true={isDvisible}>
+            <lightning-accordion-section name="D" label="Accordion Title D">
+                <p>This is the conent for section D.</p>
+                <p>Some kind of Lat for section D.</p>
+            </lightning-accordion-section>
+        </template>
+    </lightning-accordion>
+</template>

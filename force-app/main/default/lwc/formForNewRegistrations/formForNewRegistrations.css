@@ -1,0 +1,33 @@
+.main-div-container {
+    background-color: #FFFFFF;
+}
+
+.registration-creatures{
+    padding-right: 10px;
+}
+
+.custom-box {
+    text-align: center;
+    background-color: #FFFFFF;
+    padding: 1rem;
+}
+
+.listOfcontactsDisagne{
+    padding-top: 10px;
+    border: solid 1px #ecebea; 
+}
+
+.test02{
+    border-color: red;
+}
+
+.errorMessWrongNickNameStyle{
+    color: red;
+    padding-right: 70%;
+
+}
+
+.errorMessWrongContactNameStyle{
+    color: red;
+    padding-right: 70%;
+}

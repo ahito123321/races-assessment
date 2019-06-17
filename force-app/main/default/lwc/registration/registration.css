@@ -1,0 +1,70 @@
+.main-div-container {
+    background-color: #FFFFFF;
+}
+
+.c-container {
+    border: 1px solid #d8dde6;
+    margin: 10px 0 20px 0;
+    background-color: #FFFFFF;
+}
+
+.c-containerB {
+    border: 1px solid #d8dde6;
+    background-color: #FFFFFF;
+}
+.custom-box {
+    text-align: center;
+    background-color: #FFFFFF;
+    padding: 1rem;
+}
+
+.a-container{
+    border: 1px solid #d8dde6;
+    margin: 10px 0 20px 0;
+    background-color: #FFFFFF;   
+}
+
+.buttons-style{
+    padding-right: 40%;
+}
+
+.registration-wizzard {
+    transform: scaleX(-1);
+}
+
+.registretion-wizard-tittle{
+    padding-top:30%;
+}
+
+.user-nick{
+    padding-left: 10px;
+    font-size: 16pt
+}
+
+.registration-information{
+    padding-left: 10px;
+    font-size: 16pt
+}
+
+.lgc-bg {
+    background-color: rgb(242, 242, 242);
+}
+
+.lgc-bg-inverse {
+    background-color: rgb(22, 50, 92);
+}
+
+.searchContactButton{
+    margin-right: 20px;
+    margin-top: 60px;
+}
+
+.searchContactButtonLayoutItem{
+    padding-left: 0px;
+    padding-right: 0px;
+}
+
+.pSearcher{
+    padding-top: 10px;
+    border: solid 1px #ecebea; 
+}

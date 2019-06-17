@@ -1,0 +1,127 @@
+<template>
+    <div class="main-div-container">
+        <div class="a-container">
+            <lightning-layout>
+                <lightning-layout-item >
+                    <lightning-avatar class="registration-wizzard" src="https://artembubnov-dev-ed--c.visualforce.com/resource/1558515787000/RegistrationWizzard" size="large" alternative-text="regestration-wizzard-img"></lightning-avatar>
+                </lightning-layout-item>
+
+                <lightning-layout-item>
+                    <p class="registretion-wizard-tittle">Registration wizard</p>
+                </lightning-layout-item>
+            </lightning-layout> 
+            <h1 class="user-nick" id="customer-name">{prefilledNickName}</h1>      
+        </div>
+
+        <div>
+            <lightning-layout horizontal-align="spread">
+                <lightning-layout-item padding="around-small">
+                    <div class="slds-text-body_regular">Registration details</div>
+                </lightning-layout-item>
+
+                <lightning-layout-item class="buttons-style">
+                    <lightning-button variant="brand" label="Save" title="Save" class="slds-m-left_x-small" disabled={offer} onclick={updateRegistration}></lightning-button>
+                    <lightning-button variant="destructive" label="Cancel" title="Cancel"  class="slds-m-left_x-small" onclick={backToMainPage}></lightning-button>
+                </lightning-layout-item>
+            </lightning-layout>
+        </div>
+
+        <div>
+            <p class="registration-information">Registration information</p>
+        </div>
+
+        <div class="c-container">
+            <lightning-layout horizontal-align="spread">
+                <lightning-layout-item padding="around-small">
+                    <div class="custom-box"><abbr title="required" class="slds-required">*</abbr>Registration Name</div>
+                    <div class="custom-box"><abbr title="required" class="slds-required">*</abbr>Contact</div>
+                    <div class="custom-box"><abbr title="required" class="slds-required">*</abbr>Arrival Date</div>
+                </lightning-layout-item>
+
+                <lightning-layout-item padding="around-small">
+                    <lightning-input    name="inpunRegName" 
+                                        value={prefilledNickName}
+                                        onfocus={inputCleaner}
+                                        onblur={nickNameValidator}
+                                        ></lightning-input>
+                        
+                    <lightning-input    class="slds-m-bottom_small" 
+                                        data-name="PopUpContactSelector" 
+                                        value = {prefilledContact}
+                                        onfocus = {inputCleaner}
+                                        onchange = {contactFinder}
+                                        ></lightning-input>
+                       
+                                   <template if:true={popUpsController.PopUpContactSelector}>
+                                       <template if:true={grabContacts.data}>
+                                        <lightning-card>
+                                            <template for:each={grabContacts.data} for:item="contact">
+                                                <p key={contact.Id} class="pSearcher" onclick={contactValidator}>
+                                                    {contact.Name}                                                   
+                                                </p>
+                                            </template>
+                                        </lightning-card>
+                                    </template>
+                                </template>
+
+                                <template if:true={popUpsController.wrongContact}>
+                                    <p>There is no Registration with such Contact</p>
+                                    <lightning-button variant="brand" label="Ok" title="Ok" class="slds-m-left_x-small" onclick={closeModals} data-name="wrongContact"></lightning-button> 
+                                </template>
+
+                    <lightning-input type="date" name="inputArrivDate" value={prefilledArrivalDate} onchange={arrivalDateHandler}></lightning-input>
+                </lightning-layout-item>
+
+                <lightning-layout-item padding="around-small">
+                    <div class="custom-box"><abbr title="required" class="slds-required">*</abbr>Number of Mathes Paid For</div>
+                    <div class="custom-box">Number Of Matches Scheduled</div>
+                    <div class="custom-box">Number of Matches Remaining</div>
+                </lightning-layout-item>
+
+                <lightning-layout-item padding="around-small">
+                    <lightning-input    name="iputNumMatchPaidFor" 
+                                        value={prefilledNumberOfMatchesPaidFor} 
+                                        type="number"
+                                        min="1"
+                                        max="14"
+                                        oninvalid={matchCountInvalid}
+                                        onchange={matchCountValidator}
+                                        >
+                    </lightning-input>
+                    <lightning-input readonly name="numMatchSched" value={prefilledNumberOfMatchesScheduled}></lightning-input>
+                    <lightning-input readonly name="numMatchRem" value={prefilledNumberOfMatchesRemaining}></lightning-input>
+                </lightning-layout-item>
+            </lightning-layout>
+
+            <lightning-layout>
+                <lightning-layout-item if:true={popUpsController.openErrorMessWindow} padding="around-small">
+
+                    <template if:true={popUpsController.openErrorMessWrongContactName}>
+                        <p class="errorMessWrongContactNameStyle">
+                            This contact already has a registration
+                        </p>
+                    </template>
+
+                    <template if:true={popUpsController.openErrorMessWrongNickName}>
+                        <p class="errorMessWrongNickNameStyle">
+                            NickName is already exist
+                        </p>
+                    </template>
+
+                    <template if:true={popUpsController.openErrorMessNoContactsFound}>
+                        <p class="errorMessWrongNickNameStyle">
+                            There is no such contact
+                        </p>
+                    </template>
+
+                    <template if:true={popUpsController.openErrorMessNickNameInputValidator}>
+                        <p class="errorMessWrongNickNameStyle">
+                            The Registration's name must consist of characters: "a-z","A-Z", "0-9", " . ", "  ",  " , "  , " - ", " _ ".
+                        </p>
+                    </template>
+
+                </lightning-layout-item>
+            </lightning-layout>
+        </div>
+    </div>   
+</template>
