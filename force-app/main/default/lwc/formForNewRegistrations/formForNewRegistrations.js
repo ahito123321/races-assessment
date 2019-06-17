@@ -6,9 +6,9 @@ import handleNickNameInputApexContoller             from '@salesforce/apex/regis
 import { ShowToastEvent }                           from 'lightning/platformShowToastEvent';
 import {createRecord}                               from 'lightning/uiRecordApi';
 import REGISTRATION__C_OBJECT                       from '@salesforce/schema/Registration__c';
-import REGISTRATION__C_ARRIVALDATE__C               from '@salesforce/schema/Registration__c.ArrivalDate__c';
+import REGISTRATION__C_ARRIVALDATE__C               from '@salesforce/schema/Registration__c.Arrival_Date__c';
 import REGISTRATION__C_CONTACT__C                   from '@salesforce/schema/Registration__c.Contact__c';
-import REGISTRATION__C_NUMBEROFMATCHESPAIDFOR_C     from '@salesforce/schema/Registration__c.NumberOfMatchesPaidFor__c';
+import REGISTRATION__C_NUMBEROFMATCHESPAIDFOR_C     from '@salesforce/schema/Registration__c.Number_of_Matches_Paid_For__c';
 import REGISTRATION__C_NAME                         from '@salesforce/schema/Registration__c.Name';
 
 import { registerListener }                         from 'c/pubsub';
@@ -70,7 +70,7 @@ export default class RefistrationForm extends LightningElement {
     @wire (searchInputContactApexController, {inputedTextForContactSearch: '$inputedTextForContactSearch'})searchContactResult;
 
 
-
+       
     contactValidator () {
         if(this.searchContactResult.data.length > 0) {
             this.popUpsController.openErrorMessContactNotFound = false;
@@ -107,7 +107,7 @@ export default class RefistrationForm extends LightningElement {
                        this.offer = true;
                }
 
-                    let validator = result[0].Registrations__r;
+                    let validator = result[0].Registration__r;
                         if (validator === 0 || validator === undefined) {
                             this.offer = false;
                             this.popUpsController.openErrorMessWrongContactName = false;
@@ -205,16 +205,13 @@ export default class RefistrationForm extends LightningElement {
                             inputedNickData: this.inputedNickData,
                         } 
                     });   
-
-
-
-                    // this.dispatchEvent(
-                    //     new ShowToastEvent({
-                    //         title: 'Success',
-                    //         message: 'Registration: '+ this.registrationId +' has been created.',
-                    //         variant: 'success',
-                    //     }),
-                    // );
+                    this.dispatchEvent(
+                        new ShowToastEvent({
+                            title: 'Success',
+                            message: 'Registration: '+ this.inputedNickData +' has been created.',
+                            variant: 'success',
+                        }),
+                    );
                 })
                 .catch(error => {
                 
