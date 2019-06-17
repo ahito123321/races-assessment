@@ -13,15 +13,17 @@ import { CurrentPageReference}                 from 'lightning/navigation';
 
 export default class RegistrationsTable extends LightningElement {
     @wire(CurrentPageReference) pageRef;
-    @wire(takeAllRegistrations)listOfRegistrations;
+   
+    @track keyElement = '';
+    @wire (takeAllRegistrations, {keyElement: '$keyElement'})listOfRegistrations;
 
 
-    
+
     redirectToDetail(event) {
         getPickedRegistration ({selectedRegistration: event.target.innerText})
             .then (result => {
                 this.linkCreator = result[0].Id;
-                window.open(`/lightning/r/Registration__c/${this.linkCreator}/view`);
+                window.location.href = `/lightning/n/Races#${this.linkCreator}`;
             }) 
             .catch(error => {
                 this.error = error;
@@ -29,22 +31,23 @@ export default class RegistrationsTable extends LightningElement {
     }
 
 
-    
+
     handlerEditButton(event){
         getRegistrationById ({selectedRegistration: event.target.value})
             .then (result => {
                 this.linkCreatorB = result[0].Id;
-                window.open(`/lightning/r/Registration__c/${this.linkCreatorB}/view`);
+                window.location.href = `/lightning/n/Races#${this.linkCreatorB}`;
             }) 
             .catch(error => {
                 this.error = error;
             });
     }
-
+    
 
 
     connectedCallback() {
         registerListener("createRegistration", this.handlegetRegistrationInfo, this);
+        registerListener("searchRegistration", this.handlegetSearchInfo, this);
       }
      
 
@@ -60,6 +63,10 @@ export default class RegistrationsTable extends LightningElement {
 
         this.listOfRegistrations.data = [ ...this.listOfRegistrations.data, newRegistrationObject];    
         
+    }
+
+    handlegetSearchInfo (event) {
+        this.keyElement = event.detail.keyElement
     }
 
 
@@ -88,6 +95,7 @@ export default class RegistrationsTable extends LightningElement {
                     );
                 });
     }
+
 
   
      
