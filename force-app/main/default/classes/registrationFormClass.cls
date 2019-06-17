@@ -9,7 +9,7 @@ public with sharing class registrationFormClass {
      @AuraEnabled (cacheable=true)
         public static List<Contact> getChosenContactApexContoller(String searchKeyForChosenContact){
             string key = '%' + searchKeyForChosenContact + '%';
-                return [SELECT Name, (SELECT Name FROM Registrations__r) FROM Contact  WHERE Name LIKE :key LIMIT 1];
+                return [SELECT Name, (SELECT Name FROM Registration__r) FROM Contact WHERE Name LIKE :key LIMIT 1];
     }
     
      @AuraEnabled (cacheable=true)
