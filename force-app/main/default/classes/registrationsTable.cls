@@ -1,8 +1,17 @@
 public with sharing class registrationsTable {
 
      @AuraEnabled (cacheable=true)
-        public static List<Registration__c> takeAllRegistrations(){
-            return [SELECT Id, Name FROM Registration__c];
+        public static List<Registration__c> takeAllRegistrations(String keyElement){
+            string key = '%' + keyElement + '%';
+                return [SELECT Id, Name FROM Registration__c WHERE Name LIKE :key];
+            // if (key == '') {
+            //     list <Registration__c> resultA  = [SELECT Id, Name FROM Registration__c];
+            //         return resultA;
+            // } else {
+            //     list <Registration__c> resultB  = [SELECT Id, Name FROM Registration__c WHERE Name LIKE :key];
+            //         return resultB;
+            // }
+               
     }
 
 
