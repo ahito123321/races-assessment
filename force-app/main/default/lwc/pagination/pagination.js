@@ -6,10 +6,11 @@ import { CurrentPageReference } from 'lightning/navigation';
 export default class Pagination extends LightningElement {
   
    @track currentpage = 1;  
-   pagesize = 5;
    @track totalpage = 0;
+   
    @api isBlocked = false;
 
+   pagesize = 5;
    matchesIds = [];
  
 
@@ -29,10 +30,15 @@ export default class Pagination extends LightningElement {
             }
 
             // register event from match.js
-            connectedCallback() {  
+            connectedCallback() {    
               registerListener('blockPaginationEvent', this.handleChooseMatch, this);
               registerListener('changeTotalRecordsEvent', this.handleChangeTotalRecords, this);
+              registerListener('setFirstPageEvent', this.handleSetFirstPageEvent, this);
             }
+
+            handleSetFirstPageEvent = () => {
+              fireEvent(this.pageRef, 'changeCurrentPageEvent', { detail: { currentpage: 1, pagesize: this.pagesize}});
+            };
 
             // choose match by checkbox and block pagination if none in race picklist
             handleChooseMatch(event) {
@@ -49,11 +55,12 @@ export default class Pagination extends LightningElement {
               this.isBlocked = this.matchesIds.length > 0;
             }
 
-
               handleChangeTotalRecords(event) {
+               if (Math.ceil(event.detail / this.pagesize) === this.totalpage) return;
                 this.totalpage = Math.ceil(event.detail / this.pagesize);
-                this.currentpage = 1;   
+                this.currentpage = 1;                 
                 fireEvent(this.pageRef, 'changeCurrentPageEvent', { detail: { currentpage: 1, pagesize: this.pagesize}});
+               
               }           
       
    
