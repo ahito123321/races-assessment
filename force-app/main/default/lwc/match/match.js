@@ -1,5 +1,6 @@
 import { LightningElement, wire, api, track } from 'lwc';
-import getMatchesList from '@salesforce/apex/MatchesController.getMatchesList';
+import getMatchByDate from '@salesforce/apex/MatchesController.getMatchByDate';
+import getRegistrationId from '@salesforce/apex/MatchesController.getRegistrationId';
 import { getPicklistValues } from 'lightning/uiObjectInfoApi';
 import { getObjectInfo } from 'lightning/uiObjectInfoApi';
 import REALM_FIELD from '@salesforce/schema/Match__c.Realm__c';
@@ -12,51 +13,144 @@ import { CurrentPageReference } from 'lightning/navigation';
 export default class Match extends LightningElement {
 
   @track allMatches;
-  @track selectedMatch;
   @track currentMathces;
+  @track selectedMatch;
   @track isLoading;
-   
+  @track isLoadingAll = true; 
+  @track totalrecords = 0;
+
+
+  totalpage;
+  listOfMatchesIds = [];
   realm = '';
+  filterCriteria = {
+    realm: '--Any Type--'
+  };
   
   @api currentpage;  
   @api pagesize; 
   @api error; 
-  @api matchid;
-  
   
   @wire(CurrentPageReference) pageRef;
   
-   totalpage;
 
    
              
             // run code when a component renders, this hook flows from child to parent
             connectedCallback() {
-             registerListener('changeCurrentPageEvent' , this.handleChangeCurrentPageEvent, this);
-             this.selectMatchByValue();
+             registerListener('changeCurrentPageEvent' , this.handleChangeCurrentPageEvent, this); 
+             registerListener('registrationPrefillder', this.handleComeDataFromRegistration, this);     
+            }     
+
+            handleChangeDateEvent() {
+              let dataset = [];
+              this.allMatches
+                .filter(match => {
+                  if (!dataset.some(data => data.date === match.Date__c)) {
+                    dataset.push({
+                      date: match.Date__c,
+                      count: 0
+                    });
+                  }
+                  return this.listOfMatchesIds.some(id => match.Id === id.Id)
+                })
+                .forEach((match) => {
+                  
+                  let index = -1;
+                  for(let i = 0, len = dataset.length; i < len; i++) {
+                      if (dataset[i].date === match.Date__c) {
+                          index = i;
+                          break;
+                      }
+                  }
+                  dataset[index].count++;
+                });
+
+               
+              fireEvent(this.pageRef, 'changeDataEvent', {
+                detail: dataset
+              });
+       
             }
+
+            
+
+
+            handleComeDataFromRegistration(event) {
+             let detail = event.detail;
+
+             getRegistrationId({ 
+                regId: detail.registrationID,
+                dateMatch: detail.registrationAD 
+              })
+              .then(res => {
+                this.listOfMatchesIds = res; 
+                return getMatchByDate({ dateMatch: detail.registrationAD })
+              })
+              .then(res => {
+                this.allMatches = res;
+                this.totalrecords = res.length;
+                fireEvent(this.pageRef, 'changeTotalRecordsEvent', { detail: this.totalrecords }); 
+                this.isLoadingAll = false;
+                this.handleChangeDateEvent();
+              })
+              .catch(err => {
+                console.log(err);
+                console.error('err load');
+              })  
+
+          
+            }
+
 
             handleChangeCurrentPageEvent(event) {
               this.isLoading = true;
               let detail = event.detail;
               this.currentpage = detail.currentpage;
+
+              let temp = this.allMatches
+                .filter(match => {
+                  if (this.filterCriteria.realm === '--Any Type--') return true;
+                  return this.filterCriteria.realm === match.Realm__c;
+                });
+
+              this.totalrecords = temp.length;
               this.totalpage = Math.ceil(this.totalrecords / detail.pagesize );
-              this.currentMathces = this.allMatches.filter((match, index ) => {           
+
+              this.currentMathces = temp
+                .filter((match, index ) => {           
                   return detail.currentpage === Math.ceil((index + 1) / detail.pagesize);                
                 }).map(value => {
+                  let index;
+                  let checked = this.listOfMatchesIds.some((id, i) => {
+                    index = i;
+                    return value.Id === id.Id;
+                  });
+     
                   return {
                     ...value,
-                    currentValuePicklist: '--None--'
-                  };
+                    checked: checked, 
+                    currentValuePicklist: checked ? this.listOfMatchesIds[index].Race__c  : '--None--'
+                  }; 
                 });
-              this.isLoading = false;   
+
+              fireEvent(this.pageRef, 'changeTotalRecordsEvent', { detail: temp.length });
+              this.isLoading = false;
               
             }
 
+          
 
             // fire event for determine current matches by id and ckeched checkbox
             handleBlockPagination = (target) => {
-              let match = this.currentMathces.find(value => value.Id === target.value);
+              let match = this.currentMathces.find(matchIndex => matchIndex.Id === target.value);
+              if (target.checked) {
+                if ( !this.listOfMatchesIds.some(list => list.Id === match.Id))
+                     this.listOfMatchesIds = [... this.listOfMatchesIds, { Id: match.Id }];
+               } else {
+                  this.listOfMatchesIds.splice(this.listOfMatchesIds.map(id => id.Id).indexOf(match.Id), 1);
+               }
+              
               fireEvent(this.pageRef, 'blockPaginationEvent', {
                 detail: { 
                   match: match,
@@ -64,22 +158,25 @@ export default class Match extends LightningElement {
                   picklistValue: match.currentValuePicklist   
                 }
               }); 
+              this.handleChangeDateEvent();
             };
 
             // choose match by checkbox
             chooseMatchByCheckbox = (event) => {
-              this.selectedMatch = event.target.value; 
+              this.selectedMatch = event.target.value;
+              
               this.handleBlockPagination(event.target);
               
             }
  
             // checked checkbox when choose value from picklist 
-            changeByValue = (event) => {
-              let checked = this.template.querySelectorAll('.selectMatchByRow');
-              checked.forEach(checkbox => {
+            changeByValuePicklistInTable = (event) => {
+              let checkboxs = this.template.querySelectorAll('.selectMatchByRow');
+              checkboxs.forEach(checkbox => {
                 if (event.detail.id === checkbox.value ) {
                   let match = this.currentMathces.find(value => value.Id === event.detail.id);
                   match.currentValuePicklist = event.detail.selectedRace;
+                  match.checked = event.detail.checked;
                   checkbox.checked = event.detail.checked;
                   this.handleBlockPagination(checkbox); 
                 }         
@@ -106,46 +203,10 @@ export default class Match extends LightningElement {
 
             // picklist filter by realm on table
             handleComboboxChange = (event) => {
-
-              this.selectedMatch = event.detail.value;
+            
+              this.filterCriteria.realm = event.detail.value;
               this.currentpage = 1;
-              this.realm = (this.selectedMatch === '--Any Type--') ? '' : `where Realm__c = '${this.selectedMatch}'`;
-              this.selectMatchByValue();
-              
-              } 
+              fireEvent(this.pageRef, 'setFirstPageEvent', {});
+            };
 
-              // function for determine data from base and their logic  
-              selectMatchByValue() {
-                this.isLoading = true;
-                fireEvent(this.pageRef, 'changeTotalRecordsEvent', { detail: 0 });       
-                getMatchesList({ realm: this.realm  })  
-                  .then(listOfMatches => {
-                    this.allMatches = listOfMatches;
-                    this.totalrecords = listOfMatches.length;
-                    fireEvent(this.pageRef, 'changeTotalRecordsEvent', { detail: this.totalrecords });
-                    
-                      
-                  })  
-                  .catch(error => {  
-                    this.error = error;    
-                  });  
-                }
-              }         
-        
-
-        
-      
-      
-
-
-
-
-  
-      
-           
-
-
-
-   
-
-
+          }

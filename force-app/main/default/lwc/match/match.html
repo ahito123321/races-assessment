@@ -1,9 +1,19 @@
 <template>
+
     <section class="matchGeneralDiv">
         <div class="matchName">
         <span>Matches</span>
     </div>
-
+    <template if:true={isLoadingAll}><div class="demo-only" style="height:6rem">
+        <div class="slds-spinner_container">
+          <div role="status" class="slds-spinner slds-spinner_medium slds-spinner_brand">
+            <span class="slds-assistive-text">Loading</span>
+            <div class="slds-spinner__dot-a"></div>
+            <div class="slds-spinner__dot-b"></div>
+          </div>
+        </div>
+      </div></template>
+ <template if:false={isLoadingAll}>
     <!--PICKLIST-->
     <div class="realm">
                   <span class="realmName">Realm</span>
@@ -18,7 +28,7 @@
                         </lightning-combobox>
                     </template>              
     </div>
-
+          <div class="selectedMatches">Selected Matches: <b> {listOfMatchesIds.length} </b> </div>
           <!--DATA TABLE-->
           <!--SPINNER-->
           <template if:true={isLoading}><div class="demo-only" style="height:6rem">
@@ -86,7 +96,7 @@
                     <tr key={match.Id} class="slds-hint-parent">
                         <td class="slds-text-align_right" role="gridcell">
                             <div class="slds-checkbox">
-                              <input type="checkbox" class="selectMatchByRow" onclick={chooseMatchByCheckbox} id={id} value={match.Id} />
+                              <input type="checkbox" class="selectMatchByRow" onclick={chooseMatchByCheckbox} id={id} value={match.Id} checked={match.checked}/>
                               <label class="slds-checkbox__label" for={id}>
                                 <span class="slds-checkbox_faux"></span>
                               </label>
@@ -99,7 +109,7 @@
 
                               
                             <td role="gridcell" class="coloumn2">
-                                <c-picklist-races onhandlepicklistchange={changeByValue} matchid={match.Id} ></c-picklist-races>
+                                <c-picklist-races onhandlepicklistchange={changeByValuePicklistInTable} matchid={match.Id} currentvaluepicklist={match.currentValuePicklist}></c-picklist-races>
                               </td>
                               
 
@@ -122,7 +132,10 @@
    
     <p class="slds-m-vertical_medium content"> Total records: <b>{totalrecords}</b> Page <b>{currentpage}</b> of  
       <b> {totalpage} </b></p> 
-    </template>             
+      
+    </template>
+    
+ </template>             
     </section> 
    
 </template>
