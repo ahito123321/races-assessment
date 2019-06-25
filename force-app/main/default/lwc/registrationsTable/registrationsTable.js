@@ -4,13 +4,13 @@ import getPickedRegistration                    from '@salesforce/apex/registrat
 import getRegistrationById                      from '@salesforce/apex/registrationsTable.getRegistrationById'; 
 import {deleteRecord}                           from 'lightning/uiRecordApi';
 import { ShowToastEvent }                       from 'lightning/platformShowToastEvent';
-import { registerListener }                     from 'c/pubsub';
-import { CurrentPageReference}                  from 'lightning/navigation';
+
+import { registerListener, fireEvent  }                                      from 'c/pubsub';
+import { CurrentPageReference, NavigationMixin }                 from 'lightning/navigation';
 
 
 
-
-export default class RegistrationsTable extends LightningElement {
+export default class RegistrationsTable extends NavigationMixin (LightningElement) {
     @wire(CurrentPageReference) pageRef;
    
     @track keyElement = '';
@@ -19,10 +19,18 @@ export default class RegistrationsTable extends LightningElement {
 
 
     redirectToDetail(event) {
+        
         getPickedRegistration ({selectedRegistration: event.target.innerText})
             .then (result => {
                 this.linkCreator = result[0].Id;
                 window.location.href = `/lightning/n/Races#${this.linkCreator}`;
+
+                
+                fireEvent(this.pageRef, "redirectToDetail", {
+                    detail: {
+                        linkCreator : this.linkCreator,
+                    }
+                });    
             }) 
             .catch(error => {
                 this.error = error;
