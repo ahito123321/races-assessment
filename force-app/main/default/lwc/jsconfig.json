@@ -3,8 +3,17 @@
         "experimentalDecorators": true,
         "baseUrl": ".",
         "paths": {
+            "c/buttonForChart": [
+                "buttonForChart/buttonForChart.js"
+            ],
             "c/chart": [
                 "chart/chart.js"
+            ],
+            "c/formForNewRegistrations": [
+                "formForNewRegistrations/formForNewRegistrations.js"
+            ],
+            "c/listOfAllRegistrations": [
+                "listOfAllRegistrations/listOfAllRegistrations.js"
             ],
             "c/match": [
                 "match/match.js"
@@ -23,6 +32,9 @@
             ],
             "c/registration": [
                 "registration/registration.js"
+            ],
+            "c/registrationsTable": [
+                "registrationsTable/registrationsTable.js"
             ]
         }
     },
