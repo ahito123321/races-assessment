@@ -14,7 +14,7 @@
         </div>
       </div></template>
  <template if:false={isLoadingAll}>
-    <!--PICKLIST-->
+    <!--PICKLIST REALM-->
     <div class="realm">
                   <span class="realmName">Realm</span>
 
@@ -49,7 +49,7 @@
                     <th class="slds-text-align_right" scope="col" style="width:3.25rem">
                         <div class="slds-th__action slds-th__action_form">
                           <div class="slds-checkbox">
-                            <input type="checkbox" class="checkAll" id="checkboxHead" value="checkboxHead" />
+                            <input type="checkbox" class="checkAll" id="checkboxHead" value="checkboxHead" checked disabled  />
                             <label class="slds-checkbox__label" for="checkboxHead">
                               <span class="slds-checkbox_faux"></span>
                             </label>
@@ -107,9 +107,15 @@
                                 <div  class="slds-truncate"><a href="#" target="_blank" onclick={redirectToDetail} data-id={match.Id}>{match.Name}</a></div>
                               </td>
 
-                              
-                            <td role="gridcell" class="coloumn2">
+                           
+                             <!-- picklist Race and popup with error -->
+                            <td role="gridcell" class="coloumn2">       
                                 <c-picklist-races onhandlepicklistchange={changeByValuePicklistInTable} matchid={match.Id} currentvaluepicklist={match.currentValuePicklist}></c-picklist-races>
+                                <template if:false={match.isCorrect}>
+                                    <p class="errorPopup">
+                                      <b>Error: </b>Please select a Race for this Match
+                                    </p>  
+                                    </template>                     
                               </td>
                               
 
@@ -128,6 +134,7 @@
                         </template>    
                   </tbody>     
             </table>
+
  
    
     <p class="slds-m-vertical_medium content"> Total records: <b>{totalrecords}</b> Page <b>{currentpage}</b> of  

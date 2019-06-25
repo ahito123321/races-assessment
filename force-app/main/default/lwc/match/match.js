@@ -18,6 +18,7 @@ export default class Match extends LightningElement {
   @track isLoading;
   @track isLoadingAll = true; 
   @track totalrecords = 0;
+  @track popupError = false;
 
 
   totalpage;
@@ -33,15 +34,16 @@ export default class Match extends LightningElement {
   
   @wire(CurrentPageReference) pageRef;
   
-
+  
    
              
-            // run code when a component renders, this hook flows from child to parent
+            // register event from pagination.js and registration.js
             connectedCallback() {
              registerListener('changeCurrentPageEvent' , this.handleChangeCurrentPageEvent, this); 
              registerListener('registrationPrefillder', this.handleComeDataFromRegistration, this);     
             }     
 
+            // take all dates matches that was picked in registration 
             handleChangeDateEvent() {
               let dataset = [];
               this.allMatches
@@ -75,7 +77,7 @@ export default class Match extends LightningElement {
 
             
 
-
+            // handle come Id and Arrival date from registration
             handleComeDataFromRegistration(event) {
              let detail = event.detail;
 
@@ -102,7 +104,7 @@ export default class Match extends LightningElement {
           
             }
 
-
+            // filter by realm and implemented pagination and checked checkbox by picked value from Race picklist
             handleChangeCurrentPageEvent(event) {
               this.isLoading = true;
               let detail = event.detail;
@@ -130,9 +132,10 @@ export default class Match extends LightningElement {
                   return {
                     ...value,
                     checked: checked, 
-                    currentValuePicklist: checked ? this.listOfMatchesIds[index].Race__c  : '--None--'
+                    currentValuePicklist: checked ? this.listOfMatchesIds[index].Race__c  : '--None--',
+                    isCorrect: true
                   }; 
-                });
+                });    
 
               fireEvent(this.pageRef, 'changeTotalRecordsEvent', { detail: temp.length });
               this.isLoading = false;
@@ -141,30 +144,35 @@ export default class Match extends LightningElement {
 
           
 
-            // fire event for determine current matches by id and ckeched checkbox
+            // find matches on this reg Id and checked their and add, delete matches 
             handleBlockPagination = (target) => {
               let match = this.currentMathces.find(matchIndex => matchIndex.Id === target.value);
+               
               if (target.checked) {
-                if ( !this.listOfMatchesIds.some(list => list.Id === match.Id))
+                if  (!(match.currentValuePicklist === '--None--') && !this.listOfMatchesIds.some(list => list.Id === match.Id))
                      this.listOfMatchesIds = [... this.listOfMatchesIds, { Id: match.Id }];
-               } else {
-                  this.listOfMatchesIds.splice(this.listOfMatchesIds.map(id => id.Id).indexOf(match.Id), 1);
-               }
+                } else {
+                 this.listOfMatchesIds.splice(this.listOfMatchesIds.map(id => id.Id).indexOf(match.Id), 1)  
+                 }
+                         
+                 match.isCorrect = !(target.checked && match.currentValuePicklist === '--None--'); 
+
+                  fireEvent(this.pageRef, 'blockPaginationEvent', {
+                    detail: { 
+                      match: match,
+                      checked: target.checked,
+                      picklistValue: match.currentValuePicklist   
+                    }
+                  }); 
               
-              fireEvent(this.pageRef, 'blockPaginationEvent', {
-                detail: { 
-                  match: match,
-                  checked: target.checked,
-                  picklistValue: match.currentValuePicklist   
-                }
-              }); 
-              this.handleChangeDateEvent();
-            };
+                this.handleChangeDateEvent();
+              };
+   
 
             // choose match by checkbox
             chooseMatchByCheckbox = (event) => {
               this.selectedMatch = event.target.value;
-              
+
               this.handleBlockPagination(event.target);
               
             }
@@ -191,7 +199,7 @@ export default class Match extends LightningElement {
             };
 
 
-            // picklistRealm
+            // picklist Realm
             @wire(getObjectInfo, { objectApiName : OBJECT_NAME })
                             objectInfo;
 
@@ -201,7 +209,7 @@ export default class Match extends LightningElement {
                     fieldApiName : REALM_FIELD }) Match;
           
 
-            // picklist filter by realm on table
+            // picklist filter by Realm on table
             handleComboboxChange = (event) => {
             
               this.filterCriteria.realm = event.detail.value;

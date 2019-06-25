@@ -21,6 +21,12 @@
     
 }
 
+.errorPopup {
+    margin-left: -3px;
+    font-size: 12px;
+    color: red;
+} 
+
 .selectedMatches {
     font-size: 17px;
     margin-bottom: 10px; 
