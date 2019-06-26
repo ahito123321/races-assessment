@@ -16,7 +16,7 @@
                 <template for:each={listOfRegistrations.data} for:item="registration">
                     <tr key={registration.Id}  class="slds-hint-parent">
                         <td role="gridcell" class="RegistrationNameRow">
-                            <div  class="slds-truncate"><a href="#" onclick={redirectToDetail}>{registration.Name}</a></div>
+                            <div  class="slds-truncate"><a onclick={redirectToDetail}>{registration.Name}</a></div>
                         </td>
 
                         <td class="slds-is-sortable slds-is-resizable slds-text-title_caps" aria-label="Name">
@@ -32,7 +32,3 @@
             </tbody>     
         </table>
     </template>
-
-    <!-- <a href="" target="_blank" onclick={redirectToDetail}></a>
-    data-id={match.Id
-    -->

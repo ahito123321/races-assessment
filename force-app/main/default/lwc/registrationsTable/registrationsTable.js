@@ -6,12 +6,12 @@ import {deleteRecord}                           from 'lightning/uiRecordApi';
 import { ShowToastEvent }                       from 'lightning/platformShowToastEvent';
 
 import { registerListener }                     from 'c/pubsub';
-import { CurrentPageReference}                 from 'lightning/navigation';
-
+import { CurrentPageReference }                 from 'lightning/navigation';
 
 
 
 export default class RegistrationsTable extends LightningElement {
+
     @wire(CurrentPageReference) pageRef;
    
     @track keyElement = '';
@@ -23,7 +23,11 @@ export default class RegistrationsTable extends LightningElement {
         getPickedRegistration ({selectedRegistration: event.target.innerText})
             .then (result => {
                 this.linkCreator = result[0].Id;
-                window.location.href = `/lightning/n/Races#${this.linkCreator}`;
+                window.location.href = `/lightning/n/Races`;
+                const catchID = {
+                    location: this.linkCreator,
+                }
+                window.sessionStorage.setItem('catchParam', JSON.stringify(catchID));        
             }) 
             .catch(error => {
                 this.error = error;
@@ -36,7 +40,11 @@ export default class RegistrationsTable extends LightningElement {
         getRegistrationById ({selectedRegistration: event.target.value})
             .then (result => {
                 this.linkCreatorB = result[0].Id;
-                window.location.href = `/lightning/n/Races#${this.linkCreatorB}`;
+                window.location.href = '/lightning/n/Races';
+                const catchID = {
+                    location: this.linkCreatorB,
+                }
+                window.sessionStorage.setItem('catchParam', JSON.stringify(catchID));            
             }) 
             .catch(error => {
                 this.error = error;
@@ -65,6 +73,8 @@ export default class RegistrationsTable extends LightningElement {
         
     }
 
+
+
     handlegetSearchInfo (event) {
         this.keyElement = event.detail.keyElement
     }
@@ -72,15 +82,18 @@ export default class RegistrationsTable extends LightningElement {
 
 
     @track idWarehouse;
+
     wipeRegistration(event){
+        this.wipeRegistration.data = this.listOfRegistrations.data.filter(registration => registration.Id === event.target.value);
         this.listOfRegistrations.data = this.listOfRegistrations.data.filter(value => value.Id !== event.target.value);
         this.idWarehouse = event.target.value;
+        this.wipeRegistrationName = this.wipeRegistration.data[0].Name;
             deleteRecord(this.idWarehouse)
                 .then(() => { 
                     this.dispatchEvent(
                         new ShowToastEvent({
                             title: 'Success',
-                            message: 'Registration: '+ this.idWarehouse +' has been deleted.',
+                            message: 'Registration: '+ this.wipeRegistrationName +' has been deleted.',
                             variant: 'success',
                         }),
                     );
@@ -94,9 +107,8 @@ export default class RegistrationsTable extends LightningElement {
                         }),
                     );
                 });
-    }
+     }
 
 
-  
      
 }
