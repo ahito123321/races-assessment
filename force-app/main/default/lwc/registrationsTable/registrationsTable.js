@@ -84,14 +84,16 @@ export default class RegistrationsTable extends LightningElement {
     @track idWarehouse;
 
     wipeRegistration(event){
+        this.wipeRegistration.data = this.listOfRegistrations.data.filter(registration => registration.Id === event.target.value);
         this.listOfRegistrations.data = this.listOfRegistrations.data.filter(value => value.Id !== event.target.value);
         this.idWarehouse = event.target.value;
+        this.wipeRegistrationName = this.wipeRegistration.data[0].Name;
             deleteRecord(this.idWarehouse)
                 .then(() => { 
                     this.dispatchEvent(
                         new ShowToastEvent({
                             title: 'Success',
-                            message: 'Registration: '+ this.idWarehouse +' has been deleted.',
+                            message: 'Registration: '+ this.wipeRegistrationName +' has been deleted.',
                             variant: 'success',
                         }),
                     );
@@ -105,7 +107,7 @@ export default class RegistrationsTable extends LightningElement {
                         }),
                     );
                 });
-    }
+     }
 
 
      
