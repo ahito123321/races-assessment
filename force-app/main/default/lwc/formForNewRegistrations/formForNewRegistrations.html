@@ -1,51 +1,48 @@
 
 <template>
-<template if:true = {popUpsController.openNewRegistration}>
-    <div class="main-div-container">
-        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
-            <div class="slds-modal__container">
-                <header class="slds-modal__header">
-                    <lightning-button-icon  size="large"
-                                            icon-name="utility:close" 
-                                            variant="bare-inverse"
-                                            class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse"
-                                            title="Close"
-                                            onclick={closeModals}
-                                            data-name="openNewRegistration"></lightning-button-icon>
-                       
-                    <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Form to create a new registration</h2>
-                </header>
+    <template if:true = {popUpsController.openNewRegistration}>
+        <div class="main-div-container">
+            <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+                <div class="slds-modal__container">
+                    <header class="slds-modal__header">
+                        <lightning-button-icon  size="large"
+                                                icon-name="utility:close" 
+                                                variant="bare-inverse"
+                                                class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse"
+                                                title="Close"
+                                                onclick={closeModals}
+                                                data-name="openNewRegistration"></lightning-button-icon>
+                        <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Form to create a new registration</h2>
+                    </header>
 
-                <div class="main-div-container">
-                    <lightning-layout horizontal-align="spread">
-                        <lightning-layout-item padding="around-small">
-                            <div class="custom-box"><abbr title="required" class="slds-required">*</abbr>Registration Name</div>
-                            <div class="custom-box"><abbr title="required" class="slds-required">*</abbr>Contact</div>
-                        </lightning-layout-item>
-            
-                        <lightning-layout-item padding="around-small">
-                            <lightning-input data-fields-name="name" onblur={handleNickNameInput}></lightning-input>
-                            <lightning-input onchange={outputContactInfoList} value = {catchedContact} onblur={contactValidator}></lightning-input>
-
-                                <template if:true={popUpsController.openListOfContacts}>
-                                    <template if:true={searchContactResult.data}>
-                                        <lightning-card>
-                                            <template for:each={searchContactResult.data} for:item="ContactZ">
-                                                <p key={ContactZ.Id} class="listOfcontactsDisagne" onclick={getChosenContact}>
-                                                    {ContactZ.Name}                                                   
-                                                </p>
-                                            </template>
-                                        </lightning-card>
+                    <div class="main-div-container">
+                        <lightning-layout horizontal-align="spread">
+                            <lightning-layout-item padding="around-small">
+                                <div class="custom-box"><abbr title="required" class="slds-required">*</abbr>Registration Name</div>
+                                <div class="custom-box"><abbr title="required" class="slds-required">*</abbr>Contact</div>
+                            </lightning-layout-item>
+                
+                            <lightning-layout-item padding="around-small">
+                                <lightning-input data-fields-name="name" onblur={handleNickNameInput}></lightning-input>
+                                <lightning-input onchange={outputContactInfoList} value={catchedContact} onblur={contactValidator}></lightning-input>
+                                    <template if:true={popUpsController.openListOfContacts}>
+                                        <template if:true={searchContactResult.data}>
+                                            <lightning-card>
+                                                <template for:each={searchContactResult.data} for:item="ContactZ">
+                                                    <p key={ContactZ.Id} class="listOfcontactsDisagne" onclick={getChosenContact}>
+                                                        {ContactZ.Name}                                                   
+                                                    </p>
+                                                </template>
+                                            </lightning-card>
+                                        </template>
                                     </template>
-                                </template>
-
-                        </lightning-layout-item>
-            
-                        <lightning-layout-item padding="around-small">
-                            <div class="custom-box"><abbr title="required" class="slds-required">*</abbr>Arrival Date</div>
-                            <div class="custom-box"><abbr title="required" class="slds-required">*</abbr>Number of Mathes Paid For</div>
-                        </lightning-layout-item>
-            
+                            </lightning-layout-item>
+                
+                            <lightning-layout-item padding="around-small">
+                                <div class="custom-box"><abbr title="required" class="slds-required">*</abbr>Arrival Date</div>
+                                <div class="custom-box"><abbr title="required" class="slds-required">*</abbr>Number of Mathes Paid For</div>
+                            </lightning-layout-item>
+                
                             <lightning-layout-item padding="around-small">
                                 <lightning-input    type="date" 
                                                     name="inputArrivDate" 
@@ -53,7 +50,6 @@
                                                     onchange={handleDateInput}
                                                     data-fields-name="date"
                                                     ></lightning-input>
-                                                 
                                 <lightning-input    name="iputNumMatchPaidFor" 
                                                     label="Number of Mathes Paid For" 
                                                     type="number"
@@ -62,39 +58,22 @@
                                                     onchange={matchCountValidator}
                                                     oninvalid={matchCountInvalid}
                                                     ></lightning-input>
-                            
                             </lightning-layout-item>
-                        
+                            
                         </lightning-layout>
                     </div>
-                   
-                   <footer class="slds-modal__footer">
-                        <template if:true={popUpsController.openErrorMessWrongNickName}>
-                            <p class="errorMessWrongNickNameStyle">
-                                NickName is already exist
-                            </p>
-                        </template>
-                        <template if:true={popUpsController.openErrorMessWrongContactName}>
-                            <p class="errorMessWrongContactNameStyle">
-                                This contact already has a registration
-                            </p>
-                        </template>
-                        <template if:true={popUpsController.openErrorMessContactNotFound}>
-                            <p class="errorMessWrongContactNameStyle">
-                                There is no such contact
-                            </p>
-                        </template>
-                        <template if:true={popUpsController.openErrorMessNickNameInputValidator}>
-                            <p class="errorMessWrongNickNameStyle">
-                                The Registration's name must consist of characters: "a-z","A-Z", "0-9", " . ", "  ",  " , "  , " - ", " _ ".
-                            </p>
-                        </template>
-                        <lightning-button variant="brand" label="Save" title="Save" onclick={createRegistration} disabled={offer} class="slds-m-left_x-small" ></lightning-button>
-                        <lightning-button variant="destructive" label="Cancel" title="Cancel"  class="slds-m-left_x-small" onclick={closeModals} data-name="openNewRegistration"></lightning-button>
-                   </footer>
-            </div>
-        </section>
-    <div class="slds-backdrop slds-backdrop_open"></div>
-</div>
-</template>
+                    
+                    <footer class="slds-modal__footer">
+                            <lightning-button variant="brand" label="Save" title="Save" onclick={createRegistration} disabled={blockSaveButton} class="slds-m-left_x-small" ></lightning-button>
+                            <lightning-button variant="destructive" label="Cancel" title="Cancel"  class="slds-m-left_x-small" onclick={closeModals} data-name="openNewRegistration"></lightning-button>
+                    </footer>
+                    
+                    <div>
+                        <c-error-template></c-error-template>
+                    </div>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+        </div>
+    </template>
 </template>
