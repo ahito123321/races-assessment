@@ -28,7 +28,7 @@
                         </lightning-combobox>
                     </template>              
     </div>
-          <div class="selectedMatches">Selected Matches: <b> {listOfMatchesIds.length} </b> </div>
+          <div class="selectedMatches">Selected Matches: <b> {listOfMatchesIds.length} </b> of <b> { mathesPaidFor } </b> </div>
           <!--DATA TABLE-->
           <!--SPINNER-->
           <template if:true={isLoading}><div class="demo-only" style="height:6rem">
@@ -49,7 +49,7 @@
                     <th class="slds-text-align_right" scope="col" style="width:3.25rem">
                         <div class="slds-th__action slds-th__action_form">
                           <div class="slds-checkbox">
-                            <input type="checkbox" class="checkAll" id="checkboxHead" value="checkboxHead" checked disabled  />
+                            <input type="checkbox" class="checkAll" id="checkboxHead" value="checkboxHead" />
                             <label class="slds-checkbox__label" for="checkboxHead">
                               <span class="slds-checkbox_faux"></span>
                             </label>
@@ -96,7 +96,7 @@
                     <tr key={match.Id} class="slds-hint-parent">
                         <td class="slds-text-align_right" role="gridcell">
                             <div class="slds-checkbox">
-                              <input type="checkbox" class="selectMatchByRow" onclick={chooseMatchByCheckbox} id={id} value={match.Id} checked={match.checked}/>
+                              <input type="checkbox" class="selectMatchByRow" onchange={chooseMatchByCheckbox} id={id} value={match.Id} checked={match.checked}/>
                               <label class="slds-checkbox__label" for={id}>
                                 <span class="slds-checkbox_faux"></span>
                               </label>

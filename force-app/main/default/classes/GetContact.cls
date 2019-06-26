@@ -20,6 +20,7 @@ public with sharing class GetContact {
             string key = selectedNickName;
                 return [SELECT Id, Name FROM Registration__c  WHERE Name =:key];
     }
+    
 
     @AuraEnabled (cacheable=true)
         public static List<Registration__c> grabLinksNickName(String grabEdLinksNickName){

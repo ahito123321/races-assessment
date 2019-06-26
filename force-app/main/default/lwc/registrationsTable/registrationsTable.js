@@ -5,12 +5,13 @@ import getRegistrationById                      from '@salesforce/apex/registrat
 import {deleteRecord}                           from 'lightning/uiRecordApi';
 import { ShowToastEvent }                       from 'lightning/platformShowToastEvent';
 
-import { registerListener, fireEvent  }                                      from 'c/pubsub';
-import { CurrentPageReference, NavigationMixin }                 from 'lightning/navigation';
+import { registerListener }                     from 'c/pubsub';
+import { CurrentPageReference }                 from 'lightning/navigation';
 
 
 
-export default class RegistrationsTable extends NavigationMixin (LightningElement) {
+export default class RegistrationsTable extends LightningElement {
+
     @wire(CurrentPageReference) pageRef;
    
     @track keyElement = '';
@@ -19,18 +20,14 @@ export default class RegistrationsTable extends NavigationMixin (LightningElemen
 
 
     redirectToDetail(event) {
-        
         getPickedRegistration ({selectedRegistration: event.target.innerText})
             .then (result => {
                 this.linkCreator = result[0].Id;
-                window.location.href = `/lightning/n/Races#${this.linkCreator}`;
-
-                
-                fireEvent(this.pageRef, "redirectToDetail", {
-                    detail: {
-                        linkCreator : this.linkCreator,
-                    }
-                });    
+                window.location.href = `/lightning/n/Races`;
+                const catchID = {
+                    location: this.linkCreator,
+                }
+                window.sessionStorage.setItem('catchParam', JSON.stringify(catchID));        
             }) 
             .catch(error => {
                 this.error = error;
@@ -43,7 +40,11 @@ export default class RegistrationsTable extends NavigationMixin (LightningElemen
         getRegistrationById ({selectedRegistration: event.target.value})
             .then (result => {
                 this.linkCreatorB = result[0].Id;
-                window.location.href = `/lightning/n/Races#${this.linkCreatorB}`;
+                window.location.href = '/lightning/n/Races';
+                const catchID = {
+                    location: this.linkCreatorB,
+                }
+                window.sessionStorage.setItem('catchParam', JSON.stringify(catchID));            
             }) 
             .catch(error => {
                 this.error = error;
@@ -72,6 +73,8 @@ export default class RegistrationsTable extends NavigationMixin (LightningElemen
         
     }
 
+
+
     handlegetSearchInfo (event) {
         this.keyElement = event.detail.keyElement
     }
@@ -79,6 +82,7 @@ export default class RegistrationsTable extends NavigationMixin (LightningElemen
 
 
     @track idWarehouse;
+
     wipeRegistration(event){
         this.listOfRegistrations.data = this.listOfRegistrations.data.filter(value => value.Id !== event.target.value);
         this.idWarehouse = event.target.value;
@@ -104,6 +108,5 @@ export default class RegistrationsTable extends NavigationMixin (LightningElemen
     }
 
 
-  
      
 }

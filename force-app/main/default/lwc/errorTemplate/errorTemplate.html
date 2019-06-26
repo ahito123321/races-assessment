@@ -1,0 +1,34 @@
+<template >
+    <div class="main-div-container" id="main-div-container">
+        <template if:true={popUpsController.nickNameDuplicate}>
+            <p class="errorMessage">
+                NickName is already exist.
+            </p>
+        </template>
+        <template if:true={popUpsController.doubleRegistration}>
+            <p class="errorMessage">
+                This contact already has a registration.
+            </p>
+        </template>
+        <template if:true={popUpsController.contactVoid}>
+            <p class="errorMessage">
+                There is no such contact.
+            </p>
+        </template>
+        <template if:true={popUpsController.uncorrectNickName}>
+            <p class="errorMessage">
+                The Registration's name must consist of characters: "a-z","A-Z", "0-9", " . ", "  ",  " , "  , " - ", " _ ".
+            </p>
+        </template>
+        <template if:true={popUpsController.openEmptyData}>
+            <p class="errorMessage">
+                Please select the correct date.
+            </p>
+        </template>
+        <template if:true={popUpsController.golobalFormValidation}>
+            <p class="errorMessage">
+                Please fill in all fields.
+            </p>
+        </template>
+    </div>    
+</template>

@@ -12,10 +12,13 @@ import REGISTRATION__C_CONTACT__C               from '@salesforce/schema/Registr
 import REGISTRATION__C_NUMBEROFMATCHESPAIDFOR_C from '@salesforce/schema/Registration__c.Number_of_Matches_Paid_For__c';
 import REGISTRATION__C_NAME                     from '@salesforce/schema/Registration__c.Name';
 
-import { CurrentPageReference }              from 'lightning/navigation';
-import { fireEvent }                         from 'c/pubsub';
+import { CurrentPageReference }                 from 'lightning/navigation';
+import { fireEvent }                            from 'c/pubsub';
+
+
 
 export default class Registration extends LightningElement {
+
     @wire(CurrentPageReference) pageRef;
 
     registrationIDShower;
@@ -73,41 +76,37 @@ export default class Registration extends LightningElement {
 
 
     registrationPrefillder() {
-        let idCatcher = window.localStorage.getItem('catchParam');        
+        let idCatcher = window.sessionStorage.getItem('catchParam');        
         // eslint-disable-next-line dot-notation
         let chosenArrayExample = JSON.parse(idCatcher)['location'];
       
-
-        grabLinksNickName ({grabEdLinksNickName: chosenArrayExample})
-            .then (result => {
-                if (result.length > 0) {
-                    this.registrationID = result[0].Id;
-                    this.prefilledNickName = result[0].Name;
-                    this.prefilledContact = result[0].Contact__r.Name;
-                    this.prefilledArrivalDate = result[0].Arrival_Date__c;
-                    this.prefilledNumberOfMatchesPaidFor = result[0].Number_of_Matches_Paid_For__c;
-                    this.prefilledNumberOfMatchesRemaining = result[0].Number_of_Matches_Remaining__c;
-                    this.prefilledNumberOfMatchesScheduled = result[0].Number_of_Matches_Scheduled__c;
-
-
-                    fireEvent(this.pageRef, "registrationPrefillder", {
-                        detail: {
-                            registrationID : this.registrationID,
-                            registrationAD : this.prefilledArrivalDate
-                        }
-                        
-                    });
-
-                } else {
-                        this.prefilledNickName = ' ';
-                        this.prefilledContact = ' ';
+            grabLinksNickName ({grabEdLinksNickName: chosenArrayExample})
+                .then (result => {
+                    if (result.length > 0) {
+                        this.registrationID = result[0].Id;
+                        this.prefilledNickName = result[0].Name;
+                        this.prefilledContact = result[0].Contact__r.Name;
+                        this.prefilledArrivalDate = result[0].Arrival_Date__c;
+                        this.prefilledNumberOfMatchesPaidFor = result[0].Number_of_Matches_Paid_For__c;
+                        this.prefilledNumberOfMatchesRemaining = result[0].Number_of_Matches_Remaining__c;
+                        this.prefilledNumberOfMatchesScheduled = result[0].Number_of_Matches_Scheduled__c
+                        fireEvent(this.pageRef, "registrationPrefillder", {
+                            detail: {
+                                registrationID : this.registrationID,
+                                registrationAD : this.prefilledArrivalDate,
+                                registrationPaidMatches: this.prefilledNumberOfMatchesPaidFor
+                            }
+                            
+                        });
+                    } else {
+                        this.prefilledNickName = '';
+                        this.prefilledContact = '';
                         this.prefilledArrivalDate = '';
                         this.prefilledNumberOfMatchesPaidFor = '';
                         this.prefilledNumberOfMatchesRemaining = '';
                         this.prefilledNumberOfMatchesScheduled = '';
-                }
-            }) 
-            
+                    }
+                }) 
             .catch(error => {
                 this.error = error;
             });
@@ -118,13 +117,7 @@ export default class Registration extends LightningElement {
     @track popUpsController = {
         listOfNickNamesPOP:                      false,
         PopUpContactSelector:                    false,
-        wrongContact:                            false,
-        openErrorMessWrongContactName:           false,
-        openErrorMessWrongNickName:              false,
-        openErrorMessNoContactsFound:            false,
-        openErrorMessNickNameInputValidator:     false,
-        openErrorMessWindow:                     false,
-        
+        wrongContact:                            false,        
     }
 
 
@@ -149,7 +142,6 @@ export default class Registration extends LightningElement {
 
     @track searchKeyForFiveCont = '';
 
-
     contactFinder (event) {
         const searchKeyForFiveCont = event.target.value;
         // eslint-disable-next-line @lwc/lwc/no-async-operation
@@ -159,37 +151,28 @@ export default class Registration extends LightningElement {
         });
     }
 
-     @wire (getContactsFive, {searchKeyForFiveCont: '$searchKeyForFiveCont'}) grabContacts;
+    @wire (getContactsFive, {searchKeyForFiveCont: '$searchKeyForFiveCont'}) grabContacts;
     
 
 
     @track selectedContact;
     @track contactId;
-     contactValidator(event) {
+
+    catchContact(event) {
         grabSelectedContactFromApexController ({SelectedContact: event.target.innerText})
-        .then (result => {
-            if (result.length > 0) {
-                this.prefilledContact = result[0].Name
-                this.contactId = result[0].Id
-                let validator = result[0].Registration__r;
-                this.popUpsController.PopUpContactSelector = false;
-                        if (validator === 0 || validator === undefined) {
-                            this.popUpsController.openErrorMessWindow = false;
-                            this.popUpsController.openErrorMessWrongContactName = false;
-                            this.offer = false;
+            .then (result => {
 
-                        } else {
-                            this.popUpsController.openErrorMessWindow = true;
-                            this.popUpsController.openErrorMessWrongContactName = true;
-                            this.offer = true;
-                        }
-                 
-            } else {
-                this.catchedContact = '';
-                this.popUpsController.PopUpContactSelector = false;
-            }
+                if (result.length > 0) {
+                    this.prefilledContact = result[0].Name
+                    this.contactId = result[0].Id
+                    this.popUpsController.PopUpContactSelector = false;
+                    this.validateContact (result);      
+                } else {
+                    this.catchedContact = '';
+                    this.popUpsController.PopUpContactSelector = false;
+                }
 
-        }) 
+            }) 
         .catch(error => {
             this.error = error;
             this.popUpsController.PopUpContactSelector = false;
@@ -197,44 +180,118 @@ export default class Registration extends LightningElement {
      }
 
 
+    
+    validateContact (result) {
+        let validator = result[0].Registration__r;
 
-     @track selectedNickName;
-     @track inputedNickData;
-     nickNameValidator (event) {
+            if (validator === 0 || validator === undefined) {
+                this.offer = false;
+                this.errorShape = false;
+                fireEvent(this.pageRef, "contactValidation", {
+                    detail: {
+                        openErrorMessWrongContactNameShape : this.errorShape,
+                    }
+                });
+            } else {
+                this.offer = true;
+                this.errorShape = true;
+                fireEvent(this.pageRef, "contactValidation", {
+                    detail: {
+                        openErrorMessWrongContactNameShape : this.errorShape,
+                    }
+                });
+            }
+    }
+
+
+
+     emptyContactValidation (event) {
+        let emptyValidator = event.target.value;
+            if (emptyValidator === '') {
+                this.offer = true;
+                this.errorShape = true;
+                fireEvent(this.pageRef, "emptyContactValidation", {
+                    detail: {
+                        openErrorMessContactNotFoundShape : this.errorShape,
+                    }
+                });
+            } else {
+                this.offer = false;
+                this.errorShape = false;
+                fireEvent(this.pageRef, "emptyContactValidation", {
+                    detail: {
+                        openErrorMessContactNotFoundShape : this.errorShape,
+                    }
+                });
+            }
+     } 
+
+
+
+    @track selectedNickName;
+    @track inputedNickData;
+
+    nickNameValidator (event) {
         var pattern = /^[a-zA-Z][a-zA-Z0-9-_ \.]{1,30}$/;
         this.inputedNickData = event.target.value;
         let check = pattern.test(this.inputedNickData);
 
             if(check === true) {
-               this.popUpsController.openErrorMessWindow = false;
-               this.popUpsController.openErrorMessNickNameInputValidator = false;
-               this.offer = false;
-
-                grabSelectedNickNameFromApexController ({selectedNickName: event.target.value})
-                    .then (result => {
-                        if (result.length > 0) {
-                        this.popUpsController.openErrorMessWindow = true;
-                        this.popUpsController.openErrorMessWrongNickName = true;
-                        this.offer = true;
-                        } else {
-                            this.popUpsController.openErrorMessWindow = false;
-                            this.popUpsController.openErrorMessWrongNickName = false;
-                            this.offer = false;
-                        }
-
-                    }) 
-                .catch(error => {
-                    this.error = error;
-                    this.popUpsController.openErrorMessWindow = false;
-                    this.popUpsController.openErrorMessWrongNickName = false;
+                this.offer = false;
+                this.errorShape = false;
+                fireEvent(this.pageRef, "nickNameValidator", {
+                    detail: {
+                        openErrorMessNickNameInputValidatorShape : this.errorShape,
+                    }
                 });
+                this.validateNickNameDublicate(event);
             } else {
-                this.popUpsController.openErrorMessWindow = true;
-                this.popUpsController.openErrorMessNickNameInputValidator = true;
                 this.offer = true;
+                this.errorShape = true;
+                fireEvent(this.pageRef, "nickNameValidator", {
+                    detail: {
+                        openErrorMessNickNameInputValidatorShape : this.errorShape,
+                        }
+                });
             }
     }  
+
+
+
+    validateNickNameDublicate (event) {
+        grabSelectedNickNameFromApexController ({selectedNickName: event.target.value})
+            .then (result => {
+                if (result.length > 0) {
+                this.offer = true;
+                this.errorShape = true;
+                fireEvent(this.pageRef, "nickNameValidatorExistReg", {
+                    detail: {
+                        openErrorMessWrongNickNameShape : this.errorShape,
+                }
+                });
+                } else {
+                    this.offer = false;
+                    this.errorShape = false;
+                    fireEvent(this.pageRef, "nickNameValidatorExistReg", {
+                        detail: {
+                            openErrorMessWrongNickNameShape : this.errorShape,
+                        }
+                    });
+                }
+            }) 
+            .catch(error => {
+                this.error = error;
+                this.offer = false;
+                this.errorShape = false;
+                fireEvent(this.pageRef, "nickNameValidatorExistReg", {
+                    detail: {
+                        openErrorMessWrongNickNameShape : this.errorShape,
+                    }
+                });
+            });
+    }
        
+
 
     @track validator;
 
@@ -260,10 +317,40 @@ export default class Registration extends LightningElement {
     }
 
     
+    
     @track dateGetter
     arrivalDateHandler (event) {
         this.dateGetter = event.target.value;
     }
+
+
+
+    @track dateInputGetter;
+
+    handleDateInput (event) {
+        var dataPattern = /^[0-9][0-9-_ \.]{1,30}$/;
+        this.dateInputGetter = event.target.value;
+        let check = dataPattern.test(this.dateInputGetter);
+
+        if (check === true){
+            this.offer = false;
+            this.dataValidator = false;
+            fireEvent(this.pageRef, "handleDateInput", {
+                detail: {
+                    sayEmptyData : this.dataValidator,
+                }
+            });
+        } else {
+            this.offer = true;
+            this.dataValidator = true;
+            fireEvent(this.pageRef, "handleDateInput", {
+                detail: {
+                    sayEmptyData : this.dataValidator,
+                }
+            });
+        }
+    }
+
 
 
 }

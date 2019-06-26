@@ -1,10 +1,20 @@
 <template>
-        <lightning-card title="LibsChartjs" icon-name="custom:custom19">
-                <div class="slds-m-around_medium">
-                  <canvas class="line-chart" width="500" height="150" lwc:dom="manual"></canvas>
+  
+        <lightning-card title="Chart">
+            <template if:true={isLoading}><div class="demo-only" style="height:6rem">
+                <div class="slds-spinner_container">
+                  <div role="status" class="slds-spinner slds-spinner_medium slds-spinner_brand">
+                    <span class="slds-assistive-text">Loading</span>
+                    <div class="slds-spinner__dot-a"></div>
+                    <div class="slds-spinner__dot-b"></div>
+                  </div>
                 </div>
-         
+              </div></template>
+              <template if:false={isLoading}>
+                <div class="slds-m-around_medium">
+                  <canvas class="line-chart" width="500" height="100" lwc:dom="manual"></canvas>
+                </div> 
+              </template>     
             </lightning-card>
-    
-    
+          
 </template>

@@ -17,15 +17,15 @@ import { fireEvent }                                from 'c/pubsub';
 
 
 
+
+
+
 export default class RefistrationForm extends LightningElement {
-    @track offer;
+    @track blockSaveButton;
+
     @track popUpsController = {
         openNewRegistration:                     false,
         openListOfContacts:                      false,
-        openErrorMessWrongContactName:           false,
-        openErrorMessWrongNickName:              false,
-        openErrorMessContactNotFound:            false,
-        openErrorMessNickNameInputValidator:     false,
     }
 
 
@@ -52,32 +52,45 @@ export default class RefistrationForm extends LightningElement {
 
     handleOpenRegistrationForm (event) {
         this.popUpsController.openNewRegistration = event.detail.openNewRegistration;
+        this.blockSaveButton = true; 
     }
 
 
 
-    @track inputedTextForContactSearch = '';
+    @track contactSought = '';
 
     outputContactInfoList (event) {
         this.popUpsController.openListOfContacts = true;
-        let inputedTextForContactSearch = event.target.value;
+        let contactSought = event.target.value;
         // eslint-disable-next-line @lwc/lwc/no-async-operation
         this.delayTimeout = setTimeout(() => {
-        this.inputedTextForContactSearch = inputedTextForContactSearch;
+        this.contactSought = contactSought;
         });
     }
     
-    @wire (searchInputContactApexController, {inputedTextForContactSearch: '$inputedTextForContactSearch'})searchContactResult;
+    @wire (searchInputContactApexController, {contactSought: '$contactSought'})searchContactResult;
 
 
        
     contactValidator () {
+
         if(this.searchContactResult.data.length > 0) {
-            this.popUpsController.openErrorMessContactNotFound = false;
-            this.offer = false;
+            this.blockSaveButton = false;
+            this.errorShape = false;
+            fireEvent(this.pageRef, "contactValidator", {
+                detail: {
+                    openErrorMessContactNotFoundShape : this.errorShape,
+                }
+            });
+
         } else {
-            this.popUpsController.openErrorMessContactNotFound = true;
-            this.offer = true;
+            this.blockSaveButton = true;
+            this.errorShape = true;
+            fireEvent(this.pageRef, "contactValidator", {
+                detail: {
+                    openErrorMessContactNotFoundShape : this.errorShape,
+                }
+            });
         }
     }
 
@@ -91,33 +104,37 @@ export default class RefistrationForm extends LightningElement {
 
     @track contactId;
     getChosenContact (event) {
-        getChosenContactApexContoller ({searchKeyForChosenContact: event.target.innerText})
+        getChosenContactApexContoller ({chosenContact: event.target.innerText})
            .then (result => {
+
                if (result.length > 0) {
-                    
                     this.catchedContact = result[0].Name;
                     this.contactId = result[0].Id;
                     this.popUpsController.openListOfContacts = false;
-                    this.popUpsController.openErrorMessContactNotFound = false;
-                    this.offer = false;
+                    this.blockSaveButton = false;
+
+                    this.errorShape = false;
+                    fireEvent(this.pageRef, "contactValidator", {
+                        detail: {
+                            openErrorMessContactNotFoundShape : this.errorShape,
+                        }
+                    });
                     
                } else {
                        this.catchedContact = '';
-                       this.popUpsController.openErrorMessContactNotFound = true;
-                       this.offer = true;
-               }
+                       this.blockSaveButton = true;
 
-                    let validator = result[0].Registration__r;
-                        if (validator === 0 || validator === undefined) {
-                            this.offer = false;
-                            this.popUpsController.openErrorMessWrongContactName = false;
+                       this.errorShape = true;
+                       fireEvent(this.pageRef, "contactValidator", {
+                           detail: {
+                               openErrorMessContactNotFoundShape : this.errorShape,
+                           }
+                       });
+                    }
 
-                        } else {
-                            this.popUpsController.openErrorMessWrongContactName = true;
-                            this.offer = true;
-                        }
+                this.checkExistsContact(result);
 
-           }) 
+           })
            .catch(error => {
                this.error = error;
                
@@ -126,10 +143,54 @@ export default class RefistrationForm extends LightningElement {
 
 
 
+    checkExistsContact (result) {
+        let validator = result[0].Registration__r;
+    
+            if (validator === 0 || validator === undefined) {
+                this.blockSaveButton = false;
+                this.errorShape = false;
+                fireEvent(this.pageRef, "getChosenContact", {
+                    detail: {
+                        openErrorMessWrongContactNameShape : this.errorShape,
+                    }
+                });
+    
+            } else {
+                this.blockSaveButton = true;
+                this.errorShape = true;
+                    fireEvent(this.pageRef, "getChosenContact", {
+                        detail: {
+                            openErrorMessWrongContactNameShape : this.errorShape,
+                        }
+                    });
+            }
+        }
+
+
+    
     @track dateInputGetter;
 
     handleDateInput (event) {
+        var dataPattern = /^[0-9][0-9-_ \.]{1,30}$/;
         this.dateInputGetter = event.target.value;
+        let check = dataPattern.test(this.dateInputGetter);
+        if (check === true){
+            this.blockSaveButton = false;
+            this.dataValidator = false;
+                fireEvent(this.pageRef, "handleDateInput", {
+                    detail: {
+                        sayEmptyData : this.dataValidator,
+                    }
+                });
+        } else {
+            this.blockSaveButton = true;
+            this.dataValidator = true;
+                fireEvent(this.pageRef, "handleDateInput", {
+                    detail: {
+                        sayEmptyData : this.dataValidator,
+                    }
+                });
+        }
     }
 
 
@@ -141,28 +202,60 @@ export default class RefistrationForm extends LightningElement {
         let check = pattern.test(this.inputedNickData);
 
             if (check === true) {
-                this.offer = false;
-                this.popUpsController.openErrorMessNickNameInputValidator = false;
-
-                handleNickNameInputApexContoller ({nicknameInputGetter: event.target.value})
-                    .then (result => {
-                        if (result.length > 0) {
-                            //this.registrationID = result[0].Id;
-                            this.popUpsController.openErrorMessWrongNickName = true;
-                            this.offer = true;
-                        } else {
-                            this.popUpsController.openErrorMessWrongNickName = false;
-                            this.offer = false;
+                this.blockSaveButton = false;
+                this.errorShape = false;
+                    fireEvent(this.pageRef, "handleNickNameInput", {
+                        detail: {
+                            openErrorMessNickNameInputValidatorShape : this.errorShape,
                         }
-                    }) 
-                    .catch(error => {
-                        this.popUpsController.openErrorMessWrongNickName = true;
+                });
+                this.checkDublicateNickName(event);
+            } else {
+                this.blockSaveButton = true;
+                this.errorShape = true;
+                fireEvent(this.pageRef, "handleNickNameInput", {
+                    detail: {
+                        openErrorMessNickNameInputValidatorShape : this.errorShape,
+                    }
+                });
+            }        
+    }
+
+
+
+    checkDublicateNickName (event) {
+        handleNickNameInputApexContoller ({nicknameSought: event.target.value})
+        .then (result => {
+
+            if (result.length > 0) {
+                this.registrationID = result[0].Id;
+                this.blockSaveButton = true;
+
+                this.errorFormer = true;
+                    fireEvent(this.pageRef, "handleNickNameInputExistReg", {
+                        detail: {
+                            openErrorMessWrongNickNameShape : this.errorFormer,
+                        }
                     });
 
             } else {
-                this.offer = true;
-                this.popUpsController.openErrorMessNickNameInputValidator = true;
-            }        
+                this.blockSaveButton = false;
+                this.errorFormer = false;
+                    fireEvent(this.pageRef, "handleNickNameInputExistReg", {
+                        detail: {
+                            openErrorMessWrongNickNameShape : this.errorFormer,
+                        }
+                    });
+            }
+        }) 
+        .catch(error => {
+            this.errorFormer = false;
+                fireEvent(this.pageRef, "handleNickNameInputExistReg", {
+                    detail: {
+                        openErrorMessWrongNickNameShape : this.errorFormer,
+                    }
+                });
+        });
     }
 
 
@@ -170,61 +263,95 @@ export default class RefistrationForm extends LightningElement {
     @track validator;
     matchCountValidator (event) {
         this.validator = event.target.value;
+
         if (this.validator < 15 && this.validator > 0) {
-            this.offer = false;
+            this.blockSaveButton = false;
+
         } else {
-            this.offer = true;        }
+            this.blockSaveButton = true;        }
     }
 
 
     
     matchCountInvalid () {
-        this.offer = true;
+        this.blockSaveButton = true;
     }
  
 
     
     registrationId;
     createRegistration(){
-        const FIELDS = {};
-            FIELDS[REGISTRATION__C_NAME.fieldApiName] = this.inputedNickData;
-            FIELDS[REGISTRATION__C_CONTACT__C.fieldApiName] = this.contactId;
-            FIELDS[REGISTRATION__C_ARRIVALDATE__C.fieldApiName] = this.dateInputGetter;
-            FIELDS[REGISTRATION__C_NUMBEROFMATCHESPAIDFOR_C.fieldApiName] = this.validator;
-           
-        const registrationRecord = {apiName:REGISTRATION__C_OBJECT.objectApiName, fields: FIELDS};
+        let validationPtoblem = this.checkBeforeSave (this.inputedNickData, this.contactId, this.dateInputGetter, this.validator);
 
-            createRecord(registrationRecord)
-                .then(registration__c => {
-                    this.popUpsController.openNewRegistration = false;
-                    this.registrationId = registration__c.id;
-
-                    fireEvent(this.pageRef, "createRegistration", {
-                        detail: {
-                            registrationId : this.registrationId,
-                            inputedNickData: this.inputedNickData,
-                        } 
-                    });   
-                    this.dispatchEvent(
-                        new ShowToastEvent({
-                            title: 'Success',
-                            message: 'Registration: '+ this.inputedNickData +' has been created.',
-                            variant: 'success',
-                        }),
-                    );
-                })
-                .catch(error => {
-                
-                    this.dispatchEvent(
-                        new ShowToastEvent({
-                            title: 'Error creating record',
-                            message: error.body.message,//error.body.output.fieldErrors,
-                            variant: 'error',
-                        }),
-                    );
+            if (validationPtoblem === true) {
+                this.errorShape = true;
+                fireEvent(this.pageRef, "golobalFormValidation", {
+                    detail: {
+                        sayGlobalFormMistake : this.errorShape,
+                    }
                 });
-    }
 
+            } else {
+                const FIELDS = {};
+                    FIELDS[REGISTRATION__C_NAME.fieldApiName] = this.inputedNickData;
+                    FIELDS[REGISTRATION__C_CONTACT__C.fieldApiName] = this.contactId;
+                    FIELDS[REGISTRATION__C_ARRIVALDATE__C.fieldApiName] = this.dateInputGetter;
+                    FIELDS[REGISTRATION__C_NUMBEROFMATCHESPAIDFOR_C.fieldApiName] = this.validator;
+                
+                const registrationRecord = {apiName:REGISTRATION__C_OBJECT.objectApiName, fields: FIELDS};
+
+                    createRecord(registrationRecord)
+                        .then(registration__c => {
+                            this.popUpsController.openNewRegistration = false;
+                            this.registrationId = registration__c.id;
+
+                            fireEvent(this.pageRef, "createRegistration", {
+                                detail: {
+                                    registrationId : this.registrationId,
+                                    inputedNickData: this.inputedNickData,
+                                } 
+                            });   
+                            this.dispatchEvent(
+                                new ShowToastEvent({
+                                    title: 'Success',
+                                    message: 'Registration: '+ this.inputedNickData +' has been created.',
+                                    variant: 'success',
+                                }),
+                            );
+                            this.popUpsController.openNewRegistration = false;
+                        })
+                        .catch(error => {
+                            this.dispatchEvent(
+                                new ShowToastEvent({
+                                    title: 'Error creating record',
+                                    message: error.body.message,//error.body.output.fieldErrors,
+                                    variant: 'error',
+                                }),
+                            );
+                        });
+        }
+    }
+    
+
+
+    checkBeforeSave () {
+        let validationPtoblem;
+
+        if (this.inputedNickData === undefined || this.contactId === undefined || this.validator === undefined || this.dateInputGetter === undefined) {
+            validationPtoblem = true;
+            return validationPtoblem;
+
+        } else if (this.inputedNickData === null || this.contactId === null || this.validator === null || this.dateInputGetter === null) {
+            validationPtoblem = true;
+            return validationPtoblem;
+
+        } else if (this.inputedNickData === '' || this.contactId === '' || this.validator === '' || this.dateInputGetter === ''){
+            validationPtoblem = true;
+            return validationPtoblem;
+        } 
+            validationPtoblem = false;
+            return validationPtoblem;
+    }
 
 
 }

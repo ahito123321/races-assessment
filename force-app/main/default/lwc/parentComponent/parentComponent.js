@@ -1,6 +1,7 @@
 import { LightningElement, api, track, wire } from 'lwc';
 import { CurrentPageReference } from 'lightning/navigation';
 
+
 const PAGE_SIZE = 5;
 
 export default class ParentComponent extends LightningElement {

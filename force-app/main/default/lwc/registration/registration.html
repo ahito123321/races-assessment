@@ -46,29 +46,25 @@
                         
                     <lightning-input    class="slds-m-bottom_small" 
                                         data-name="PopUpContactSelector" 
-                                        value = {prefilledContact}
-                                        onfocus = {inputCleaner}
-                                        onchange = {contactFinder}
+                                        value={prefilledContact}
+                                        onfocus={inputCleaner}
+                                        onchange={contactFinder}
+                                        onblur={emptyContactValidation}
                                         ></lightning-input>
                        
-                                   <template if:true={popUpsController.PopUpContactSelector}>
-                                       <template if:true={grabContacts.data}>
-                                        <lightning-card>
-                                            <template for:each={grabContacts.data} for:item="contact">
-                                                <p key={contact.Id} class="pSearcher" onclick={contactValidator}>
-                                                    {contact.Name}                                                   
-                                                </p>
-                                            </template>
-                                        </lightning-card>
+                                    <template if:true={popUpsController.PopUpContactSelector}>
+                                        <template if:true={grabContacts.data}>
+                                            <lightning-card>
+                                                <template for:each={grabContacts.data} for:item="contact">
+                                                    <p key={contact.Id} class="pSearcher" onclick={catchContact}>
+                                                        {contact.Name}                                                   
+                                                    </p>
+                                                </template>
+                                            </lightning-card>
+                                        </template>
                                     </template>
-                                </template>
-
-                                <template if:true={popUpsController.wrongContact}>
-                                    <p>There is no Registration with such Contact</p>
-                                    <lightning-button variant="brand" label="Ok" title="Ok" class="slds-m-left_x-small" onclick={closeModals} data-name="wrongContact"></lightning-button> 
-                                </template>
-
-                    <lightning-input type="date" name="inputArrivDate" value={prefilledArrivalDate} onchange={arrivalDateHandler}></lightning-input>
+                                    
+                    <lightning-input type="date" name="inputArrivDate" value={prefilledArrivalDate} onblur={handleDateInput}></lightning-input>
                 </lightning-layout-item>
 
                 <lightning-layout-item padding="around-small">
@@ -93,32 +89,10 @@
             </lightning-layout>
 
             <lightning-layout>
-                <lightning-layout-item if:true={popUpsController.openErrorMessWindow} padding="around-small">
-
-                    <template if:true={popUpsController.openErrorMessWrongContactName}>
-                        <p class="errorMessWrongContactNameStyle">
-                            This contact already has a registration
-                        </p>
-                    </template>
-
-                    <template if:true={popUpsController.openErrorMessWrongNickName}>
-                        <p class="errorMessWrongNickNameStyle">
-                            NickName is already exist
-                        </p>
-                    </template>
-
-                    <template if:true={popUpsController.openErrorMessNoContactsFound}>
-                        <p class="errorMessWrongNickNameStyle">
-                            There is no such contact
-                        </p>
-                    </template>
-
-                    <template if:true={popUpsController.openErrorMessNickNameInputValidator}>
-                        <p class="errorMessWrongNickNameStyle">
-                            The Registration's name must consist of characters: "a-z","A-Z", "0-9", " . ", "  ",  " , "  , " - ", " _ ".
-                        </p>
-                    </template>
-
+                <lightning-layout-item padding="around-small">
+                    <div>
+                        <c-error-template></c-error-template>
+                    </div>
                 </lightning-layout-item>
             </lightning-layout>
         </div>

@@ -1,0 +1,11 @@
+.main-div-container {
+    background-color: #FFFFFF;
+    border-radius: 2%;
+    padding-top: 2%
+}
+
+.errorMessage{
+    color: red;
+    padding-right: 70%;
+
+}

@@ -7,22 +7,25 @@ import REALM_FIELD from '@salesforce/schema/Match__c.Realm__c';
 import OBJECT_NAME from '@salesforce/schema/Match__c';
 import { fireEvent, registerListener } from 'c/pubsub';
 import { CurrentPageReference } from 'lightning/navigation';
+import { ShowToastEvent }  from 'lightning/platformShowToastEvent';
 
 
 
 export default class Match extends LightningElement {
 
   @track allMatches;
-  @track currentMathces;
+  @track currentMathces = [];
   @track selectedMatch;
   @track isLoading;
   @track isLoadingAll = true; 
   @track totalrecords = 0;
   @track popupError = false;
+  @track mathesPaidFor = [];
 
 
   totalpage;
   listOfMatchesIds = [];
+  oldListOfMatchesIds = [];
   realm = '';
   filterCriteria = {
     realm: '--Any Type--'
@@ -40,7 +43,8 @@ export default class Match extends LightningElement {
             // register event from pagination.js and registration.js
             connectedCallback() {
              registerListener('changeCurrentPageEvent' , this.handleChangeCurrentPageEvent, this); 
-             registerListener('registrationPrefillder', this.handleComeDataFromRegistration, this);     
+             registerListener('registrationPrefillder', this.handleComeDataFromRegistration, this);  
+               
             }     
 
             // take all dates matches that was picked in registration 
@@ -83,15 +87,19 @@ export default class Match extends LightningElement {
 
              getRegistrationId({ 
                 regId: detail.registrationID,
-                dateMatch: detail.registrationAD 
+                dateMatch: detail.registrationAD, 
+                matchPaidFor: detail.registrationPaidMatches
               })
               .then(res => {
-                this.listOfMatchesIds = res; 
-                return getMatchByDate({ dateMatch: detail.registrationAD })
-              })
+                this.listOfMatchesIds = res;
+                this.oldListOfMatchesIds = res;                 
+                return getMatchByDate({ dateMatch: detail.registrationAD, matchPaidFor: detail.registrationPaidMatches })            
+              })  
               .then(res => {
-                this.allMatches = res;
+                this.allMatches = res;  
                 this.totalrecords = res.length;
+                this.mathesPaidFor = detail.registrationPaidMatches;  
+                
                 fireEvent(this.pageRef, 'changeTotalRecordsEvent', { detail: this.totalrecords }); 
                 this.isLoadingAll = false;
                 this.handleChangeDateEvent();
@@ -100,7 +108,7 @@ export default class Match extends LightningElement {
                 console.log(err);
                 console.error('err load');
               })  
-
+              
           
             }
 
@@ -122,7 +130,7 @@ export default class Match extends LightningElement {
               this.currentMathces = temp
                 .filter((match, index ) => {           
                   return detail.currentpage === Math.ceil((index + 1) / detail.pagesize);                
-                }).map(value => {
+                }).map(value => {  
                   let index;
                   let checked = this.listOfMatchesIds.some((id, i) => {
                     index = i;
@@ -135,8 +143,10 @@ export default class Match extends LightningElement {
                     currentValuePicklist: checked ? this.listOfMatchesIds[index].Race__c  : '--None--',
                     isCorrect: true
                   }; 
-                });    
-
+                });
+                
+                
+      
               fireEvent(this.pageRef, 'changeTotalRecordsEvent', { detail: temp.length });
               this.isLoading = false;
               
@@ -144,26 +154,50 @@ export default class Match extends LightningElement {
 
           
 
-            // find matches on this reg Id and checked their and add, delete matches 
-            handleBlockPagination = (target) => {
-              let match = this.currentMathces.find(matchIndex => matchIndex.Id === target.value);
-               
-              if (target.checked) {
-                if  (!(match.currentValuePicklist === '--None--') && !this.listOfMatchesIds.some(list => list.Id === match.Id))
-                     this.listOfMatchesIds = [... this.listOfMatchesIds, { Id: match.Id }];
-                } else {
-                 this.listOfMatchesIds.splice(this.listOfMatchesIds.map(id => id.Id).indexOf(match.Id), 1)  
-                 }
-                         
-                 match.isCorrect = !(target.checked && match.currentValuePicklist === '--None--'); 
+            // find matches on this reg Id and checked their and add, delete matches && output error when matches > paidForMatches
+            handleBlockPagination = (match) => {
+              match.isCorrect = !(match.checked && match.currentValuePicklist === '--None--'); 
 
+              let limitChecked = this.listOfMatchesIds.length === this.mathesPaidFor; 
+
+              let isExist = this.listOfMatchesIds.some(list => list.Id === match.Id);
+                if (match.checked && !limitChecked) {
+                  if  (!(match.currentValuePicklist === '--None--') && !isExist)
+                    this.listOfMatchesIds = [... this.listOfMatchesIds, { Id: match.Id, Race__c: match.currentValuePicklist }];
+                } else {
+                  if (isExist)
+                    this.listOfMatchesIds.splice(this.listOfMatchesIds.map(id => id.Id).indexOf(match.Id), 1);
+                    else if (limitChecked) {
+                     match.checked = false;
+                      this.dispatchEvent(
+                        new ShowToastEvent({
+                          title: 'Сan not choose more matches',
+                          message: 'Error',
+                          variant: 'error'
+                        }),
+                      );  
+                     return;
+                    }
+                } 
+ 
                   fireEvent(this.pageRef, 'blockPaginationEvent', {
                     detail: { 
                       match: match,
-                      checked: target.checked,
+                      checked: match.checked,
                       picklistValue: match.currentValuePicklist   
                     }
                   }); 
+
+                  fireEvent(this.pageRef, 'listOfMatchesIds', {
+                    detail : {
+                      oldList: this.oldListOfMatchesIds,
+                      newList: this.listOfMatchesIds
+                    }
+                  });
+
+                  console.log(this.oldListOfMatchesIds.length);
+                  console.log({ ... match});
+                  console.log(this.listOfMatchesIds.length);
               
                 this.handleChangeDateEvent();
               };
@@ -172,13 +206,13 @@ export default class Match extends LightningElement {
             // choose match by checkbox
             chooseMatchByCheckbox = (event) => {
               this.selectedMatch = event.target.value;
-
-              this.handleBlockPagination(event.target);
-              
+              let match = this.currentMathces.find(value => value.Id === event.target.value);
+              match.checked = event.target.checked;                  
+              this.handleBlockPagination(match);
             }
  
             // checked checkbox when choose value from picklist 
-            changeByValuePicklistInTable = (event) => {
+            changeByValuePicklistInTable = (event) => {         
               let checkboxs = this.template.querySelectorAll('.selectMatchByRow');
               checkboxs.forEach(checkbox => {
                 if (event.detail.id === checkbox.value ) {
@@ -186,7 +220,7 @@ export default class Match extends LightningElement {
                   match.currentValuePicklist = event.detail.selectedRace;
                   match.checked = event.detail.checked;
                   checkbox.checked = event.detail.checked;
-                  this.handleBlockPagination(checkbox); 
+                  this.handleBlockPagination(match); 
                 }         
               });  
             };

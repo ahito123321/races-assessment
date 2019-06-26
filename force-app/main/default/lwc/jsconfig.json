@@ -3,11 +3,11 @@
         "experimentalDecorators": true,
         "baseUrl": ".",
         "paths": {
-            "c/buttonForChart": [
-                "buttonForChart/buttonForChart.js"
-            ],
             "c/chart": [
                 "chart/chart.js"
+            ],
+            "c/errorTemplate": [
+                "errorTemplate/errorTemplate.js"
             ],
             "c/formForNewRegistrations": [
                 "formForNewRegistrations/formForNewRegistrations.js"
