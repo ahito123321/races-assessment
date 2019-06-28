@@ -43,7 +43,8 @@ export default class Match extends LightningElement {
             // register event from pagination.js and registration.js
             connectedCallback() {
              registerListener('changeCurrentPageEvent' , this.handleChangeCurrentPageEvent, this); 
-             registerListener('registrationPrefillder', this.handleComeDataFromRegistration, this);  
+             registerListener('registrationPrefillder', this.handleComeDataFromRegistration, this);
+             registerListener('handlepicklistchange', this.changeByValuePicklistInTable, this);  
                
             }     
 
@@ -91,9 +92,9 @@ export default class Match extends LightningElement {
                 matchPaidFor: detail.registrationPaidMatches
               })
               .then(res => {
-                this.listOfMatchesIds = res;
+                this.listOfMatchesIds = [... res];
                 this.oldListOfMatchesIds = res;                 
-                return getMatchByDate({ dateMatch: detail.registrationAD, matchPaidFor: detail.registrationPaidMatches })            
+                return getMatchByDate({ dateMatch: detail.registrationAD })            
               })  
               .then(res => {
                 this.allMatches = res;  
@@ -156,19 +157,21 @@ export default class Match extends LightningElement {
 
             // find matches on this reg Id and checked their and add, delete matches && output error when matches > paidForMatches
             handleBlockPagination = (match) => {
+
               match.isCorrect = !(match.checked && match.currentValuePicklist === '--None--'); 
 
               let limitChecked = this.listOfMatchesIds.length === this.mathesPaidFor; 
 
               let isExist = this.listOfMatchesIds.some(list => list.Id === match.Id);
+     
                 if (match.checked && !limitChecked) {
                   if  (!(match.currentValuePicklist === '--None--') && !isExist)
-                    this.listOfMatchesIds = [... this.listOfMatchesIds, { Id: match.Id, Race__c: match.currentValuePicklist }];
+                    this.listOfMatchesIds.push({ Id: match.Id, Race__c: match.currentValuePicklist });
                 } else {
-                  if (isExist)
-                    this.listOfMatchesIds.splice(this.listOfMatchesIds.map(id => id.Id).indexOf(match.Id), 1);
-                    else if (limitChecked) {
-                     match.checked = false;
+                  if (isExist) {                        
+                    this.listOfMatchesIds.splice(this.listOfMatchesIds.map(id => id.Id).indexOf(match.Id), 1);                
+                  } else if (limitChecked) {
+                     match.checked = false; 
                       this.dispatchEvent(
                         new ShowToastEvent({
                           title: 'Сan not choose more matches',
@@ -179,6 +182,9 @@ export default class Match extends LightningElement {
                      return;
                     }
                 } 
+               
+                console.log('new list=========>' + this.listOfMatchesIds.length);
+                console.log('old list=========>' + this.oldListOfMatchesIds.length);
  
                   fireEvent(this.pageRef, 'blockPaginationEvent', {
                     detail: { 
@@ -192,16 +198,13 @@ export default class Match extends LightningElement {
                     detail : {
                       oldList: this.oldListOfMatchesIds,
                       newList: this.listOfMatchesIds
-                    }
+                    } 
                   });
 
-                  console.log(this.oldListOfMatchesIds.length);
-                  console.log({ ... match});
-                  console.log(this.listOfMatchesIds.length);
-              
                 this.handleChangeDateEvent();
               };
-   
+
+            
 
             // choose match by checkbox
             chooseMatchByCheckbox = (event) => {

@@ -110,7 +110,7 @@
                            
                              <!-- picklist Race and popup with error -->
                             <td role="gridcell" class="coloumn2">       
-                                <c-picklist-races onhandlepicklistchange={changeByValuePicklistInTable} matchid={match.Id} currentvaluepicklist={match.currentValuePicklist}></c-picklist-races>
+                                <c-picklist-races matchid={match.Id} currentvaluepicklist={match.currentValuePicklist}></c-picklist-races>
                                 <template if:false={match.isCorrect}>
                                     <p class="errorPopup">
                                       <b>Error: </b>Please select a Race for this Match
