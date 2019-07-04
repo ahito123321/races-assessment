@@ -137,6 +137,7 @@ export default class Match extends LightningElement {
                     index = i;
                     return value.Id === id.Id;
                   });
+                  this.isLoading = false;
      
                   return {
                     ...value,
@@ -149,7 +150,7 @@ export default class Match extends LightningElement {
                 
       
               fireEvent(this.pageRef, 'changeTotalRecordsEvent', { detail: temp.length });
-              this.isLoading = false;
+            
               
             }
 
@@ -157,21 +158,20 @@ export default class Match extends LightningElement {
 
             // find matches on this reg Id and checked their and add, delete matches && output error when matches > paidForMatches
             handleBlockPagination = (match) => {
-
-              match.isCorrect = !(match.checked && match.currentValuePicklist === '--None--'); 
+           
+              match.isCorrect = !(match.checked && match.currentValuePicklist === '--None--');
 
               let limitChecked = this.listOfMatchesIds.length === this.mathesPaidFor; 
 
               let isExist = this.listOfMatchesIds.some(list => list.Id === match.Id);
-     
-                if (match.checked && !limitChecked) {
-                  if  (!(match.currentValuePicklist === '--None--') && !isExist)
-                    this.listOfMatchesIds.push({ Id: match.Id, Race__c: match.currentValuePicklist });
-                } else {
-                  if (isExist) {                        
-                    this.listOfMatchesIds.splice(this.listOfMatchesIds.map(id => id.Id).indexOf(match.Id), 1);                
-                  } else if (limitChecked) {
-                     match.checked = false; 
+              if (match.checked && !limitChecked) {
+                if  (!(match.currentValuePicklist === '--None--') && !isExist)
+                  this.listOfMatchesIds.push({ Id: match.Id, Race__c: match.currentValuePicklist });
+              } else {
+                if (isExist) {                        
+                  this.listOfMatchesIds.splice(this.listOfMatchesIds.map(id => id.Id).indexOf(match.Id), 1);           
+                  } else if (limitChecked){
+                    match.checked = false; 
                       this.dispatchEvent(
                         new ShowToastEvent({
                           title: 'Сan not choose more matches',
@@ -179,11 +179,10 @@ export default class Match extends LightningElement {
                           variant: 'error'
                         }),
                       );  
-                     return;
+                    return;
                     }
-                } 
-               
-                console.log('new list=========>' + this.listOfMatchesIds.length);
+                }
+                      
                 console.log('old list=========>' + this.oldListOfMatchesIds.length);
  
                   fireEvent(this.pageRef, 'blockPaginationEvent', {
@@ -197,7 +196,9 @@ export default class Match extends LightningElement {
                   fireEvent(this.pageRef, 'listOfMatchesIds', {
                     detail : {
                       oldList: this.oldListOfMatchesIds,
-                      newList: this.listOfMatchesIds
+                      selectedRace: match.currentValuePicklist,
+                      matchId: match
+
                     } 
                   });
 
@@ -209,8 +210,9 @@ export default class Match extends LightningElement {
             // choose match by checkbox
             chooseMatchByCheckbox = (event) => {
               this.selectedMatch = event.target.value;
-              let match = this.currentMathces.find(value => value.Id === event.target.value);
-              match.checked = event.target.checked;                  
+              let match = this.currentMathces.find(value => value.Id === event.target.value); 
+              match.checked = event.target.checked; 
+                            
               this.handleBlockPagination(match);
             }
  
@@ -219,15 +221,13 @@ export default class Match extends LightningElement {
               let checkboxs = this.template.querySelectorAll('.selectMatchByRow');
               checkboxs.forEach(checkbox => {
                 if (event.detail.id === checkbox.value ) {
-                  let match = this.currentMathces.find(value => value.Id === event.detail.id);
-                  match.currentValuePicklist = event.detail.selectedRace;
-                  match.checked = event.detail.checked;
-                  checkbox.checked = event.detail.checked;
+                  let match = this.currentMathces.find(value => value.Id === event.detail.id);               
+                  match.currentValuePicklist = event.detail.selectedRace;                        
+                  match.checked = event.detail.checked;    
                   this.handleBlockPagination(match); 
                 }         
-              });  
+              }); 
             };
-
 
 
             // redirect to Match page detail
@@ -255,3 +255,5 @@ export default class Match extends LightningElement {
             };
 
           }
+
+        
